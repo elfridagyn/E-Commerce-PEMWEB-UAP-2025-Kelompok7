@@ -1,0 +1,4 @@
+<h1>Dashboard Admin</h1>
+<p>Selamat datang, {{ auth()->user()->name }}!</p>
+
+<a href="{{ url('/') }}">Ke Halaman Utama</a>

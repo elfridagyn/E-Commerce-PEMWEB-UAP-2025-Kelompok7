@@ -9,15 +9,12 @@ class Store extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
-        'logo',
-        'about',
+        'store_name',
+        'description',
         'phone',
-        'address_id',
-        'city',
         'address',
-        'postal_code',
-        'is_verified',
+        'logo',
+        'status',
     ];
 
     // relationships one store has one owner (user)

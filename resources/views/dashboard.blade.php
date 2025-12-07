@@ -1,17 +1,23 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
+@section('title', 'Dashboard')
+
+@section('content')
+<p>Halo {{ auth()->user()->name }}! Ini adalah dashboard admin.</p>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5>Total User</h5>
+            <p>{{ $users }}</p>
         </div>
     </div>
-</x-app-layout>
+
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5>Total Store</h5>
+            <p>{{ $stores }}</p>
+        </div>
+    </div>
+</div>
+@endsection
