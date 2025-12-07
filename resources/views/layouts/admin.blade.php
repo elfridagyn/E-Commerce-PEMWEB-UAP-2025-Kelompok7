@@ -19,8 +19,17 @@
 
         <hr class="text-white">
 
-        <a href="{{ url('/') }}" class="text-white">Kembali ke Website</a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-danger w-100 mt-3">
+                Logout
+            </button>
+        </form>
+
+
+        <a href="{{ url('/') }}" class="text-white"></a>
     </div>
+
 
     <!-- CONTENT -->
     <div class="p-4 flex-grow-1">

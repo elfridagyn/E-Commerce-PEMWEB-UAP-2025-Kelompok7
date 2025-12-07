@@ -144,7 +144,7 @@
             </p>
             
             <div class="main-page-link">
-                <a href="{{ url('/') }}" class="button-link">
+                <a href="{{ route('admin.dashboard') }}" class="button-link">
                     <i class="fas fa-home icon-link"></i> 
                     Admin Panel
                 </a>

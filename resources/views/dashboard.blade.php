@@ -1,23 +1,17 @@
-@extends('layouts.admin')
-
-@section('title', 'Dashboard')
+<!-- resources/views/dashboard.blade.php -->
+@extends('layouts.app')
 
 @section('content')
-<p>Halo {{ auth()->user()->name }}! Ini adalah dashboard admin.</p>
-
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Total User</h5>
-            <p>{{ $users }}</p>
-        </div>
+    <div class="container">
+        @if(Auth::user()->role === 'admin')
+            <h1>Dashboard Admin</h1>
+            <p>Selamat datang, {{ Auth::user()->name }}! Anda login sebagai Admin.</p>
+        @elseif(Auth::user()->role === 'user')
+            <h1>Dashboard User</h1>
+            <p>Selamat datang, {{ Auth::user()->name }}! Anda login sebagai User.</p>
+        @elseif(Auth::user()->role === 'seller')
+            <h1>Dashboard Penjual</h1>
+            <p>Selamat datang, {{ Auth::user()->name }}! Anda login sebagai Penjual.</p>
+        @endif
     </div>
-
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Total Store</h5>
-            <p>{{ $stores }}</p>
-        </div>
-    </div>
-</div>
 @endsection
