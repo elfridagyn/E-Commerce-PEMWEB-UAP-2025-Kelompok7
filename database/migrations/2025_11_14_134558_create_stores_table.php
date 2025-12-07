@@ -9,20 +9,25 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+ // File: database/migrations/xxxx_xx_xx_xxxxxx_create_stores_table.php
+
+public function up(): void
 {
     Schema::create('stores', function (Blueprint $table) {
         $table->id();
-        $table->unsignedBigInteger('user_id');
-        $table->string('store_name');
-        $table->text('description')->nullable();
-        $table->string('phone')->nullable();
-        $table->string('address')->nullable();
-        $table->string('logo')->nullable();
-        $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        
+        // TAMBAHKAN KOLOM-KOLOM INI:
+        $table->string('name', 100);    // Untuk menampung 'Toko Seller 1' (Error 2)
+        $table->string('city', 50);     // Untuk menampung 'Malang' (Error 1)
+        
+        // Asumsi kolom lain yang Anda gunakan di seeder juga perlu ditambahkan:
+        $table->string('phone');
+        $table->text('address');
+        $table->string('postal_code', 10);
+        $table->boolean('is_verified')->default(false);
+        
         $table->timestamps();
-
-        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
     });
 }
 

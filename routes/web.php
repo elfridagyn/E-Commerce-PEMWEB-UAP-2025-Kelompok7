@@ -8,6 +8,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminStoreVerificationController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\SellerStoreController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
@@ -86,4 +87,30 @@ Route::middleware(['auth'])->group(function () {
         request()->session()->regenerateToken();
         return redirect()->route('login');
     })->name('logout');
+
+    // routes/web.php
+
+Route::middleware(['auth'])->group(function () {
+
+    // 1. ADMIN PANEL
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+        // Tambahkan rute untuk CRUD user, produk, dll.
+        Route::get('/panel', function () { return view('admin.panel'); })->name('panel');
+    });
+
+    // 2. SELLER PANEL
+    Route::middleware(['role:seller'])->prefix('seller')->name('seller.')->group(function () {
+        Route::get('/dashboard', [SellerController::class, 'index'])->name('dashboard');
+        // Tambahkan rute untuk mengelola toko/produk seller
+        Route::get('/panel', function () { return view('seller.panel'); })->name('panel');
+    });
+    
+    // 3. MEMBER/CUSTOMER DASHBOARD
+    Route::middleware(['role:member'])->prefix('member')->name('member.')->group(function () {
+        Route::get('/dashboard', [MemberController::class, 'index'])->name('dashboard');
+        // Rute untuk melihat riwayat pembelian, profil, dll.
+        Route::get('/panel', function () { return view('member.panel'); })->name('panel');
+    });
+});
 });
