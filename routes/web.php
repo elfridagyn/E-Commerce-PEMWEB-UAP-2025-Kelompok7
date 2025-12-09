@@ -2,137 +2,196 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+
+// Controllers
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AdminStoreVerificationController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\SellerStoreController;
+use App\Http\Controllers\AdminStoreVerificationController;
+
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\CategoryController;
+
+use App\Http\Controllers\Seller\SellerDashboardController;
+use App\Http\Controllers\Member\MemberDashboardController;
+
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MemberController;
+
 use App\Models\Product;
 use App\Models\ProductCategory;
+
 use App\Http\Controllers\Member\HomeController;
-use App\Http\Controllers\Member\ProductController;
+use App\Http\Controllers\Member\ProductController as MemberProductController;
+use App\Http\Controllers\Member\CheckoutController;
 
 
-// ---------------- PUBLIC ROUTES ----------------
+// -------------------------------------------------
+// HOME → Redirect sesuai role
+// -------------------------------------------------
 Route::get('/', function () {
+
     if (Auth::check()) {
-        // Sudah login → redirect ke dashboard sesuai role
+
         if (Auth::user()->role === 'admin') {
             return redirect()->route('admin.dashboard');
-        } elseif (Auth::user()->role === 'user') {
-            return redirect()->route('user.dashboard');
-        } elseif (Auth::user()->role === 'seller') {
+        }
+
+        if (Auth::user()->role === 'seller') {
             return redirect()->route('seller.dashboard');
         }
+
+        return redirect()->route('member.dashboard');
     }
 
-    // Belum login → tampilkan halaman login
     return redirect()->route('login');
 })->name('home');
-Route::resource('products', ProductController::class);
 
-// ---------------- AUTH ROUTES ----------------
-require __DIR__.'/auth.php';
+
+// -------------------------------------------------
+// AUTH
+// -------------------------------------------------
+require _DIR_ . '/auth.php';
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-// ---------------- DASHBOARD & PROTECTED ROUTES ----------------
+
+
+// -------------------------------------------------
+// PROTECTED ROUTES
+// -------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
-    // ---------------- ADMIN ----------------
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/admin/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+    //
+    // -------------------------------------------------
+    // ADMIN PANEL
+    // -------------------------------------------------
+    //
+    Route::middleware(['role:admin'])
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
 
-        Route::resource('categories', \App\Http\Controllers\ProductCategoryController::class);
-        Route::resource('admin/products', \App\Http\Controllers\AdminProductController::class);
-        Route::resource('admin/users', UserController::class);
+            // Dashboard
+            Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+                ->name('dashboard');
 
-        Route::get('/admin/store-verification', [AdminStoreVerificationController::class, 'index'])->name('admin.store.index');
-        Route::get('/admin/store/{store}/approve', [AdminStoreVerificationController::class, 'approve'])->name('admin.store.approve');
-        Route::get('/admin/store/{store}/reject', [AdminStoreVerificationController::class, 'reject'])->name('admin.store.reject');
-    });
+            // Kelola Kategori
+            Route::resource('kategori', CategoryController::class);
 
-    // ---------------- SELLER ----------------
-    Route::middleware('role:seller')->group(function () {
-        Route::get('/seller/dashboard', function () {
-            return view('seller.dashboard');
-        })->name('seller.dashboard');
+            // Kelola Produk (ADMIN hanya bisa menampilkan)
+            Route::resource('produk', ProductController::class)->except([
+                'create', 'store', 'edit', 'update', 'destroy'
+            ]);
 
-        Route::get('/seller/store/register', [SellerStoreController::class, 'index'])->name('seller.store.register');
-        Route::post('/seller/store/register', [SellerStoreController::class, 'store'])->name('seller.store.save');
-    });
+            // Kelola User
+            Route::resource('users', AdminUserController::class);
 
-    // ---------------- MEMBER ----------------
-Route::middleware(['auth', 'role:member'])
-    ->prefix('member')
-    ->name('member.')
-    ->group(function (){
+            // VERIFIKASI TOKO
+            Route::get('/stores', [AdminStoreVerificationController::class, 'index'])
+                ->name('store.index');
 
-        Route::get('/home', [HomeController::class, 'index'])->name('home');
+            Route::get('/stores/{store}/approve', [AdminStoreVerificationController::class, 'approve'])
+                ->name('store.approve');
 
-        // DETAIL PRODUK (route benar)
-        Route::get('/product/{slug}', [ProductController::class, 'show'])
-            ->name('product.show');
-
-        Route::get('/checkout/{product}', [\App\Http\Controllers\Member\CheckoutController::class, 'start'])
-            ->name('checkout.start');
-
-        Route::get('/history', function () {
-            return view('member.history');
-        })->name('history');
-
-        Route::get('/topup', function () {
-            return view('member.topup');
-        })->name('topup');
-    });
+            Route::get('/stores/{store}/reject', [AdminStoreVerificationController::class, 'reject'])
+                ->name('store.reject');
+        });
 
 
+    //
+    // -------------------------------------------------
+    // MEMBER PANEL (versi dari HEAD)
+    // -------------------------------------------------
+    //
+    Route::middleware(['role:member'])
+        ->prefix('member')
+        ->name('member.')
+        ->group(function () {
+
+            Route::get('/home', [HomeController::class, 'index'])
+                ->name('home');
+
+            // Detail produk
+            Route::get('/product/{slug}', [MemberProductController::class, 'show'])
+                ->name('product.show');
+
+            // Checkout
+            Route::get('/checkout/{product}', [CheckoutController::class, 'start'])
+                ->name('checkout.start');
+
+            // Riwayat
+            Route::get('/history', function () {
+                return view('member.history');
+            })->name('history');
+
+            // Topup saldo
+            Route::get('/topup', function () {
+                return view('member.topup');
+            })->name('topup');
+        });
 
 
-    // ---------------- PROFILE ----------------
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    //
+    // -------------------------------------------------
+    // SELLER PANEL
+    // -------------------------------------------------
+    //
+    Route::middleware(['role:seller'])
+        ->prefix('seller')
+        ->name('seller.')
+        ->group(function () {
 
-    // ---------------- LOGOUT ----------------
-    Route::post('/logout', function () {
-        Auth::logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-        return redirect()->route('login');
-    })->name('logout');
+            Route::get('/dashboard', [SellerDashboardController::class, 'index'])
+                ->name('dashboard');
 
-    // routes/web.php
+            // Register toko
+            Route::get('/store/register', [SellerStoreController::class, 'index'])
+                ->name('store.register');
 
-Route::middleware(['auth'])->group(function () {
+            Route::post('/store/register', [SellerStoreController::class, 'store'])
+                ->name('store.save');
+        });
 
-    // 1. ADMIN PANEL
-    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        // Tambahkan rute untuk CRUD user, produk, dll.
-        Route::get('/panel', function () { return view('admin.panel'); })->name('panel');
-    });
 
-    // 2. SELLER PANEL
-    Route::middleware(['role:seller'])->prefix('seller')->name('seller.')->group(function () {
-        Route::get('/dashboard', [SellerController::class, 'index'])->name('dashboard');
-        // Tambahkan rute untuk mengelola toko/produk seller
-        Route::get('/panel', function () { return view('seller.panel'); })->name('panel');
-    });
-    
-    // 3. MEMBER/CUSTOMER DASHBOARD
-    Route::middleware(['role:member'])->prefix('member')->name('member.')->group(function () {
-        Route::get('/dashboard', [MemberController::class, 'index'])->name('dashboard');
-        // Rute untuk melihat riwayat pembelian, profil, dll.
-        Route::get('/panel', function () { return view('member.panel'); })->name('panel');
-    });
-});
+    //
+    // -------------------------------------------------
+    // MEMBER PANEL (versi dari main)
+    // -------------------------------------------------
+    //
+    Route::middleware(['role:member'])
+        ->prefix('member')
+        ->name('member.')
+        ->group(function () {
+
+            Route::get('/dashboard', [MemberDashboardController::class, 'index'])
+                ->name('dashboard');
+
+            Route::get('/transactions', [TransactionController::class, 'index'])
+                ->name('transactions.index');
+
+            Route::post('/checkout/{product}', [TransactionController::class, 'store'])
+                ->name('checkout.store');
+        });
+
+
+    //
+    // -------------------------------------------------
+    // PROFILE
+    // -------------------------------------------------
+    //
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });

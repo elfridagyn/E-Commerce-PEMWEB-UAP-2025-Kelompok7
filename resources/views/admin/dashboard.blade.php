@@ -6,152 +6,247 @@
     <title>Dashboard Admin E-commerce</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJzL3m3rQkC8mP+kLhV/I/s8v7l3fI/T6x9X/0nU/5sI4ZJ8E5Y5n5G5G5G5G5G5H5G5G5G5G5G5G5H5G5G5G5G==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
     <style>
-        :root {
-            /* Palet Warna */
-            --primary-color: #0d6efd; /* Biru Primer Baru */
-            --secondary-color: #6c757d;
-            --accent-color: #198754; /* Hijau */
-            --background-color: #f4f6f9; /* Latar belakang sangat terang */
-            --surface-color: #ffffff; /* Warna Card */
-            --text-color-dark: #212529;
-            --text-color-light: #5a6268;
-            --box-shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --spacing-md: 1.5rem;
-            --spacing-lg: 2rem;
-        }
-
-        /* Reset dan Tipografi Dasar */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            font-family: 'Poppins', sans-serif; 
-            background-color: var(--background-color);
-            color: var(--text-color-dark);
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex; /* Memposisikan konten di tengah halaman */
-            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f3b8c8, #e38fa2, #d86e82);
+            /* Perbaikan: Hapus padding horizontal, pertahankan padding vertikal */
+            margin: 0;
+            padding: 40px 0; 
+        }
+
+        /* NAVBAR */
+        .top-navbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 30px;
+            /* Perbaikan: Tambahkan padding horizontal agar ada jarak dari tepi */
+            padding: 0 40px; 
+            /* Penting: Pastikan ia berada di atas konten lain */
+            position: relative;
+            z-index: 1000;
+        }
+
+        .nav-right {
+            position: relative;
+            display: flex;
             align-items: center;
         }
 
-        /* Container Utama */
-        .main-container {
-            width: 100%;
-            max-width: 500px; /* Batasi lebar agar fokus */
-            padding: var(--spacing-lg);
-            text-align: center; /* Teks di tengah container */
-        }
-
-        /* CARD STYLE: Untuk membungkus konten utama */
-        .info-card {
-            background-color: var(--surface-color);
-            border-radius: 16px; /* Sudut lebih membulat */
-            padding: var(--spacing-lg);
-            box-shadow: var(--box-shadow-subtle);
-            margin-bottom: var(--spacing-lg);
-            transition: transform 0.3s ease;
-            border-left: 5px solid var(--primary-color); /* Garis aksen */
-        }
-        
-        .info-card:hover {
-            transform: translateY(-5px); /* Efek mengangkat saat hover */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        /* 1. Dashboard Admin Title */
-        .admin-title {
-            font-size: 2rem; /* Ukuran lebih kecil karena ada ikon besar */
-            font-weight: 700;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-color-dark);
-        }
-
-        /* Ikon Besar di atas Card */
-        .title-icon-wrapper {
-            font-size: 3.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite; /* Efek berdetak kecil */
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        /* 2. Selamat datang, Admin! */
-        .welcome-text {
-            font-size: 1.1rem;
-            color: var(--text-color-light);
-            margin-bottom: var(--spacing-md);
-        }
-
-        /* 3. Tombol Ke Halaman Utama (Styling sebagai Button) */
-        .main-page-link {
-            /* Dikelola oleh button-link styling */
-            margin-top: var(--spacing-md);
-        }
-        
-        .button-link {
-            display: inline-flex;
+        .user-info {
+            display: flex;
             align-items: center;
-            background-color: var(--accent-color); /* Warna hijau yang menarik */
-            color: var(--surface-color); /* Teks putih */
-            text-decoration: none; 
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(10px);
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+            transition: 0.3s;
+        }
+
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            /* Ganti placeholder ini dengan gambar avatar sungguhan jika ada */
+        }
+
+        .username {
             font-weight: 600;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            color: #6b2b38;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            width: 180px;
+            border-radius: 12px;
+            box-shadow: 0px 8px 18px rgba(0,0,0,0.20);
+            display: none;
+            flex-direction: column;
+            padding: 12px 0;
+            /* Perbaikan: z-index lebih tinggi dari navbar */
+            z-index: 1001; 
+        }
+
+        .dropdown-menu a,
+        .dropdown-menu button {
+            padding: 12px 18px;
+            background: none;
             border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+            color: #6b2b38;
+            text-decoration: none; /* Tambahkan agar a tidak bergaris bawah */
         }
 
-        .button-link:hover {
-            background-color: #157347; /* Sedikit lebih gelap saat hover */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
+        .dropdown-menu a:hover,
+        .dropdown-menu button:hover {
+            background: rgba(230, 170, 185, 0.3);
         }
 
-        .icon-link {
-            margin-right: 10px;
+        /* DASHBOARD TITLE */
+        .dashboard {
+            max-width: 900px;
+            margin: auto;
+            /* Perbaikan: Tambahkan padding horizontal agar konten tidak menempel ke tepi */
+            padding: 0 40px; 
+        }
+
+        .title-box {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.15);
+            text-align: center;
+            margin-bottom: 35px;
+            border-left: 8px solid #c96a7f;
+        }
+
+        .title-box i {
+            font-size: 3rem;
+            color: #c96a7f;
+        }
+
+        .title-box h2 {
+            margin-top: 12px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #6b2b38;
+        }
+
+        .title-box p {
+            margin-top: 8px;
+            color: #6b2b38;
+            font-weight: 500;
+        }
+
+        /* MENU GRID */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.12);
+            transition: 0.3s;
+            border-bottom: 4px solid transparent;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-6px);
+            border-bottom: 4px solid #c96a7f;
+        }
+
+        .menu-card i {
+            font-size: 2.4rem;
+            color: #c96a7f;
+            margin-bottom: 12px;
+        }
+
+        .menu-card a {
+            text-decoration: none;
+            color: #6b2b38;
+            font-weight: 600;
+            display: block;
+            margin-top: 8px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
 
-    <main class="main-container">
-        
-        <div class="info-card">
-            
-            <div class="title-icon-wrapper">
-                <i class="fas fa-cubes"></i> 
-            </div>
-            
-            <h2 class="admin-title">Dashboard Admin</h2>
-            
-            <p class="welcome-text">
-                Selamat datang, Admin! 
-            </p>
-            
-            <div class="main-page-link">
-                <a href="{{ route('admin.dashboard') }}" class="button-link">
-                    <i class="fas fa-home icon-link"></i> 
-                    Admin Panel
-                </a>
-            </div>
+<div class="top-navbar">
+    <div class="nav-right">
+        <div class="user-info" onclick="toggleDropdown()">
+            <img src="https://ui-avatars.com/api/?name=AD" class="avatar">
+            <span class="username">Admin</span>
+            <i class="fas fa-caret-down"></i>
         </div>
-        
-    </main>
+
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="#">Profil</a>
+            <form action="{{ route('logout') }}" method="POST">
+    @csrf
+    <button type="submit">Logout</button>
+</form>
+
+        </div>
+    </div>
+</div>
+
+<div class="dashboard">
+
+    <div class="title-box">
+        <i class="fas fa-crown"></i>
+        <h2>Dashboard Admin</h2>
+        <p>Selamat datang di panel administrasi sistem e-commerce.</p>
+    </div>
+
+    <div class="menu-grid">
+
+        <div class="menu-card">
+            <i class="fas fa-tags"></i>
+            <a href="{{ route('admin.kategori.index') }}">Daftar Kategori Produk</a>
+        </div>
+
+        <div class="menu-card">
+            <i class="fas fa-box"></i>
+            <a href="{{ route('admin.produk.index') }}">Daftar Produk</a>
+        </div>
+
+        <div class="menu-card">
+            <i class="fas fa-users"></i>
+            <a href="{{ route('admin.users.index') }}">Kelola User</a>
+        </div>
+
+        <div class="menu-card">
+            <i class="fas fa-store"></i>
+            <a href="{{ route('admin.store.index') }}">Verifikasi Toko</a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function toggleDropdown() {
+    const menu = document.getElementById("dropdownMenu");
+    // Perbaikan: gunakan class list untuk mengelola tampilan (lebih baik dari style.display)
+    // Namun untuk mempertahankan kode aslinya, kita gunakan style.display
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+}
+
+document.addEventListener("click", function(e) {
+    const menu = document.getElementById("dropdownMenu");
+    const userInfo = document.querySelector(".user-info");
+
+    // Tutup dropdown jika klik di luar area user-info
+    if (menu.style.display === "block" && !userInfo.contains(e.target) && !menu.contains(e.target)) {
+        menu.style.display = "none";
+    }
+});
+</script>
 
 </body>
 </html>
