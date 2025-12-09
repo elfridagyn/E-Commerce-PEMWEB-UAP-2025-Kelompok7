@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola User - Admin</title>
+    <title>Kelola Kategori - Admin</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
@@ -18,15 +18,17 @@
 
         /* NAVBAR */
         .top-navbar {
+            /* PERBAIKAN: Mengatur agar konten menyebar ke kiri dan kanan */
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: space-between; 
+            align-items: center; 
             margin-bottom: 30px;
             padding: 0 40px;
             position: relative;
             z-index: 1000;
         }
 
+        /* TOMBOL KEMBALI KE DASHBOARD (Gaya Baru) */
         .back-to-dashboard {
             display: flex;
             align-items: center;
@@ -47,11 +49,11 @@
             transform: scale(1.02);
         }
 
- .nav-right {
-            position: relative;
-            display: flex;
-            align-items: center;
+        .back-to-dashboard i {
+            font-size: 16px;
         }
+        
+        .nav-right { position: relative; display: flex; align-items: center; }
 
         .user-info {
             display: flex;
@@ -66,20 +68,10 @@
             transition: 0.3s;
         }
 
-        .user-info:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
+        .user-info:hover { background: rgba(255, 255, 255, 0.5); }
 
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-        }
-
-        .username {
-            font-weight: 600;
-            color: #6b2b38;
-        }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; }
+        .username { font-weight: 600; color: #6b2b38; }
 
         .dropdown-menu {
             position: absolute;
@@ -93,7 +85,7 @@
             display: none;
             flex-direction: column;
             padding: 12px 0;
-            z-index: 1001; 
+            z-index: 1001; /* Pastikan di atas elemen lain */
         }
 
         .dropdown-menu a,
@@ -114,12 +106,8 @@
             background: rgba(230, 170, 185, 0.3);
         }
 
-        /* MAIN PAGE CONTENT */
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            padding: 0 40px;
-        }
+        /* PAGE LAYOUT */
+        .container { max-width: 1000px; margin: auto; padding: 0 40px; }
 
         .title-box {
             background: rgba(255, 255, 255, 0.25);
@@ -132,17 +120,8 @@
             border-left: 8px solid #c96a7f;
         }
 
-        .title-box i {
-            font-size: 3rem;
-            color: #6b2b38;
-        }
-
-        .title-box h2 {
-            margin-top: 12px;
-            font-size: 2rem;
-            font-weight: 700;
-            color: #6b2b38;
-        }
+        .title-box i { font-size: 3rem; color: #c96a7f; }
+        .title-box h2 { margin-top: 12px; font-size: 2rem; font-weight: 700; color: #6b2b38; }
 
         /* TABLE */
         .table-box {
@@ -153,60 +132,27 @@
             box-shadow: 0px 10px 25px rgba(0,0,0,0.15);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 15px; }
+        th, td { padding: 14px; text-align: left; color: #6b2b38; }
+        th { background: rgba(255,255,255,0.6); font-weight: 700; }
 
-        th, td {
-            padding: 14px;
-            text-align: left;
-            color: #6b2b38;
-        }
-
-        th {
-            background: rgba(255,255,255,0.6);
-            font-weight: 700;
-        }
-
-        tr {
-            background: rgba(255,255,255,0.4);
-        }
-
-        tr:hover {
-            background: rgba(255,255,255,0.7);
-        }
-
-        .btn-add {
-            display: inline-block;
-            background: #6b2b38;
-            padding: 10px 18px;
-            border-radius: 8px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 15px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
-        }
-
-        .btn-edit { background: #c96a7f; color:white; padding:6px 12px; border-radius:6px; text-decoration:none; }
-        .btn-delete { background:#8b1e2e; color:white; padding:6px 12px; border:none; border-radius:6px; }
-
+        tr { background: rgba(255,255,255,0.4); }
+        tr:hover { background: rgba(255,255,255,0.7); }
     </style>
 </head>
 
 <body>
 
-{{-- NAVBAR --}}
 <div class="top-navbar">
+    
     <a href="{{ route('admin.dashboard') }}" class="back-to-dashboard">
         <i class="fas fa-arrow-left"></i>
-        <span>Kembali</span>
+        <span>Kembali ke Dashboard</span>
     </a>
 
     <div class="nav-right">
         <div class="user-info" onclick="toggleDropdown()">
-            <img src="https://ui-avatars.com/api/?name=Admin" class="avatar">
+            <img src="https://ui-avatars.com/api/?name=AD" class="avatar">
             <span class="username">Admin</span>
             <i class="fas fa-caret-down"></i>
         </div>
@@ -223,54 +169,37 @@
 
 <div class="container">
 
-    {{-- TITLE --}}
     <div class="title-box">
-        <i class="fas fa-users"></i>
-        <h2>Manajemen User</h2>
-        <p>Daftar semua pengguna dalam sistem.</p>
+        <i class="fas fa-tags"></i>
+        <h2>Daftar Kategori Produk</h2>
+        <p>Daftar seluruh kategori yang tersedia dalam sistem.</p>
     </div>
 
-    {{-- TABLE --}}
     <div class="table-box">
-
-        <a href="/admin/users/create" class="btn-add">+ Tambah User</a>
-
         <table>
             <tr>
-                <th>Nama</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Aksi</th>
+                <th>ID</th>
+                <th>Nama Kategori</th>
             </tr>
 
-            @foreach($users as $user)
+            @foreach ($categories as $category)
             <tr>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->email }}</td>
-                <td>{{ $user->role }}</td>
-
-                <td>
-                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn-edit">Edit</a>
-
-                    <form action="/admin/users/{{ $user->id }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn-delete" onclick="return confirm('Yakin hapus?')">Hapus</button>
-                    </form>
-                </td>
+                <td>{{ $category->id }}</td>
+                <td>{{ $category->name }}</td>
             </tr>
             @endforeach
 
-            @if($users->isEmpty())
+            @if ($categories->isEmpty())
             <tr>
-                <td colspan="4" style="text-align:center; padding:20px; font-weight:600;">
-                    Tidak ada user.
+                <td colspan="2" style="text-align:center; padding:20px; font-weight:600;">
+                    Tidak ada kategori tersedia.
                 </td>
             </tr>
             @endif
 
         </table>
     </div>
+
 </div>
 
 <script>

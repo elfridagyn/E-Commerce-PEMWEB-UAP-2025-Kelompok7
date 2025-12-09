@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola User - Admin</title>
+    <title>Kelola Produk - Admin</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
@@ -18,15 +18,17 @@
 
         /* NAVBAR */
         .top-navbar {
+            /* PERBAIKAN: Mengatur agar konten menyebar ke kiri dan kanan */
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: space-between; 
+            align-items: center; /* Tambahkan agar item sejajar di tengah secara vertikal */
             margin-bottom: 30px;
             padding: 0 40px;
             position: relative;
             z-index: 1000;
         }
 
+        /* TOMBOL KEMBALI KE DASHBOARD */
         .back-to-dashboard {
             display: flex;
             align-items: center;
@@ -47,7 +49,11 @@
             transform: scale(1.02);
         }
 
- .nav-right {
+        .back-to-dashboard i {
+            font-size: 16px;
+        }
+
+        .nav-right {
             position: relative;
             display: flex;
             align-items: center;
@@ -114,7 +120,7 @@
             background: rgba(230, 170, 185, 0.3);
         }
 
-        /* MAIN PAGE CONTENT */
+        /* PAGE CONTENT */
         .container {
             max-width: 1000px;
             margin: auto;
@@ -134,7 +140,7 @@
 
         .title-box i {
             font-size: 3rem;
-            color: #6b2b38;
+            color: #c96a7f;
         }
 
         .title-box h2 {
@@ -144,7 +150,7 @@
             color: #6b2b38;
         }
 
-        /* TABLE */
+        /* PRODUCT TABLE */
         .table-box {
             background: rgba(255,255,255,0.4);
             backdrop-filter: blur(10px);
@@ -156,6 +162,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 15px;
         }
 
         th, td {
@@ -176,37 +183,21 @@
         tr:hover {
             background: rgba(255,255,255,0.7);
         }
-
-        .btn-add {
-            display: inline-block;
-            background: #6b2b38;
-            padding: 10px 18px;
-            border-radius: 8px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 15px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
-        }
-
-        .btn-edit { background: #c96a7f; color:white; padding:6px 12px; border-radius:6px; text-decoration:none; }
-        .btn-delete { background:#8b1e2e; color:white; padding:6px 12px; border:none; border-radius:6px; }
-
     </style>
 </head>
 
 <body>
 
-{{-- NAVBAR --}}
 <div class="top-navbar">
+    
     <a href="{{ route('admin.dashboard') }}" class="back-to-dashboard">
         <i class="fas fa-arrow-left"></i>
-        <span>Kembali</span>
+        <span>Kembali ke Dashboard</span>
     </a>
 
     <div class="nav-right">
         <div class="user-info" onclick="toggleDropdown()">
-            <img src="https://ui-avatars.com/api/?name=Admin" class="avatar">
+            <img src="https://ui-avatars.com/api/?name=AD" class="avatar">
             <span class="username">Admin</span>
             <i class="fas fa-caret-down"></i>
         </div>
@@ -221,56 +212,42 @@
     </div>
 </div>
 
+
 <div class="container">
 
-    {{-- TITLE --}}
     <div class="title-box">
-        <i class="fas fa-users"></i>
-        <h2>Manajemen User</h2>
-        <p>Daftar semua pengguna dalam sistem.</p>
+        <i class="fas fa-box"></i>
+        <h2>Daftar Produk</h2>
+        <p>Daftar seluruh produk yang terdaftar dalam sistem.</p>
     </div>
 
-    {{-- TABLE --}}
-    <div class="table-box">
+<div class="table-box">
+    <table>
+        <tr>
+            <th>Nama Produk</th>
+            <th>Kategori</th>
+            <th>Harga</th>
+            <th>Stok</th>
+        </tr>
 
-        <a href="/admin/users/create" class="btn-add">+ Tambah User</a>
+        @foreach ($products as $product)
+        <tr>
+            <td>{{ $product->name }}</td>
+            <td>{{ $product->category->name ?? '-' }}</td>
+            <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
+            <td>{{ $product->stock }}</td>
+        </tr>
+        @endforeach
 
-        <table>
-            <tr>
-                <th>Nama</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Aksi</th>
-            </tr>
+        @if ($products->isEmpty())
+        <tr>
+            <td colspan="4" style="text-align:center; padding: 20px; font-weight:600;">
+                Tidak ada produk tersedia.
+            </td>
+        </tr>
+        @endif
 
-            @foreach($users as $user)
-            <tr>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->email }}</td>
-                <td>{{ $user->role }}</td>
-
-                <td>
-                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn-edit">Edit</a>
-
-                    <form action="/admin/users/{{ $user->id }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn-delete" onclick="return confirm('Yakin hapus?')">Hapus</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-
-            @if($users->isEmpty())
-            <tr>
-                <td colspan="4" style="text-align:center; padding:20px; font-weight:600;">
-                    Tidak ada user.
-                </td>
-            </tr>
-            @endif
-
-        </table>
-    </div>
+    </table>
 </div>
 
 <script>
