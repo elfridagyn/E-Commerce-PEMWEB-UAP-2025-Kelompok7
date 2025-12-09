@@ -7,20 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     protected $fillable = [
-        'code',
-        'buyer_id',
-        'store_id',
-        'address',
-        'address_id',
-        'city',
-        'postal_code',
-        'shipping',
-        'shipping_type',
-        'shipping_cost',
-        'tracking_number',
-        'tax',
-        'grand_total',
-        'payment_status',
+    'code',
+    'user_id',
+    'product_id',
+    'shipping_type_id',
+    'address',
+    'phone',
+    'payment_method',
+    'total_price',
+    'status',
     ];
 
     protected $casts = [

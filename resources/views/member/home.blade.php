@@ -1,85 +1,173 @@
+{{-- resources/views/member/home.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Beranda')
 
+@push('styles')
+<style>
+    /* Visual style (glass + pastel pink) */
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .glass-container {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(16px);
+        border-radius: 30px;
+        padding: 40px;
+        max-width: 1200px;
+        margin: 40px auto;
+        box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .search-box input {
+        border-radius: 20px;
+        padding: 10px 15px;
+        border: 2px solid #b25c6a;
+        background: transparent;
+        color: #6b2b38;
+    }
+
+    .btn-search {
+        background: #c96a7f;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+    }
+
+    .category-pill {
+        padding: 6px 18px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #ffc4d5;
+        color: #6b2b38;
+        border: 1px solid #d18398;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .category-pill.active {
+        background: #c96a7f;
+        color: white;
+    }
+
+    .product-card {
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(10px);
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.1);
+        transition: .3s;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 12px 35px rgba(0,0,0,0.18);
+    }
+
+    .price {
+        color: #6b2b38;
+        font-weight: 900;
+    }
+
+    .btn-detail {
+        display: block;
+        background: #c96a7f;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        border-radius: 20px;
+        margin-top: 10px;
+        font-weight: bold;
+        transition: .2s;
+        text-decoration: none;
+    }
+
+    .btn-detail:hover {
+        background: #a44c61;
+    }
+
+    /* small helpers */
+    .product-card img {
+        width: 100%;
+        height: 11rem; /* match h-44 */
+        object-fit: cover;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="bg-gradient-to-b from-pink-50 to-white min-h-screen py-10">
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="glass-container">
 
         {{-- Header --}}
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <div class="flex flex-col md:flex-row justify-between mb-10 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-pink-800">My Store</h1>
-                <p class="text-sm text-pink-500 mt-1">
-                    Temukan produk favoritmu dengan pengalaman belanja yang lebih menyenangkan✨
+                <h1 class="text-3xl font-bold text-[#6b2b38]">My Store</h1>
+                <p class="text-sm text-[#6b2b38] mt-1">
+                    Temukan produk favoritmu dengan pengalaman belanja yang lebih menyenangkan ✨
                 </p>
             </div>
 
             {{-- Search --}}
-            <form method="GET" action="{{ url()->current() }}" class="flex gap-2 w-full md:w-auto">
+            <form method="GET" action="{{ url()->current() }}" class="flex gap-2 search-box w-full md:w-auto">
                 <input
                     type="text"
                     name="q"
                     value="{{ request('q') }}"
                     placeholder="Cari produk..."
-                    class="px-3 py-2 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm w-full md:w-56"
+                    class="min-w-0"
                 >
-                <button
-                    class="px-4 py-2 rounded-xl bg-pink-600 text-white text-sm font-semibold hover:bg-purple-700 transition">
-                    Cari
-                </button>
+                <button class="btn-search" type="submit">Cari</button>
             </form>
         </div>
 
         {{-- Filter Kategori --}}
-        <div class="mb-7 flex flex-wrap gap-2">
-            <a href="{{ url()->current() }}"
-               class="px-4 py-1.5 rounded-full text-xs font-medium shadow
-                      {{ request('category') ? 'bg-pink-100 text-pink-600' : 'bg-pink-600 text-white' }}">
+        <div class="flex flex-wrap gap-2 mb-6">
+            <a href="{{ url()->current() }}" class="category-pill {{ request('category') ? '' : 'active' }}">
                 Semua
             </a>
-            @foreach ($categories as $category)
+
+            @foreach ($categories ?? [] as $category)
                 <a href="?category={{ $category->id }}"
-                   class="px-4 py-1.5 rounded-full text-xs font-medium shadow
-                          {{ request('category') == $category->id ? 'bg-pink-600 text-white' : 'bg-purple-100 text-purple-600 hover:bg-purple-200' }}">
+                   class="category-pill {{ request('category') == $category->id ? 'active' : '' }}">
                     {{ $category->name }}
                 </a>
             @endforeach
         </div>
 
-        {{-- GRID PRODUK --}}
+        {{-- Produk --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            @forelse ($products as $product)
-                <div class="bg-white rounded-2xl shadow-md border border-pink-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition">
-                    <div class="relative">
-                        <img src="{{ $product->thumbnail_url ?? 'https://via.placeholder.com/400x300?text=Product' }}"
-                             alt="{{ $product->name }}"
-                             class="w-full h-44 object-cover">
+            @forelse ($products ?? collect() as $product)
+                <div class="product-card">
+                    <img src="{{ $product->thumbnail_url ?? 'https://via.placeholder.com/400x300?text=Product' }}"
+                         alt="{{ $product->name }}">
 
-                        <span class="absolute top-2 left-2 bg-white/90 text-[10px] font-semibold px-2 py-1 rounded-full text-pink-600 shadow">
-                            {{ $product->category->name ?? 'Tanpa Kategori' }}
-                        </span>
-                    </div>
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div>
+                            <h3 class="font-semibold text-[#6b2b38] text-sm line-clamp-2">{{ $product->name }}</h3>
+                            <p class="text-xs text-[#6b2b38] mt-1">{{ $product->store->name ?? 'Toko' }}</p>
 
-                    <div class="p-4">
-                        <h3 class="text-sm font-semibold text-gray-800 line-clamp-2">{{ $product->name }}</h3>
+                            <p class="price mt-2 text-lg">
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
+                            </p>
+                        </div>
 
-                        <p class="text-xs text-gray-500 mt-1">
-                            {{ $product->store->name ?? 'Toko' }}
-                        </p>
-
-                        <p class="mt-2 text-pink-700 font-extrabold text-lg">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
-                        </p>
-
-                        <a href="{{ route('member.product.show', $product->slug) }}"
-                           class="mt-3 inline-flex items-center justify-center w-full text-sm font-semibold px-3 py-2 rounded-xl bg-pink-600 text-white hover:bg-pink-700 transition">
-                            Lihat Detail
-                        </a>
+                        {{-- tombol di bagian bawah card --}}
+                        <div class="mt-auto">
+                            <a href="{{ route('member.product.show', $product->slug) }}" class="btn-detail">
+                                Lihat Detail
+                            </a>
+                        </div>
                     </div>
                 </div>
             @empty
-                <p class="text-sm text-gray-500 col-span-full text-center py-10">
+                <p class="text-center w-full text-[#6b2b38] py-10">
                     Belum ada produk tersedia.
                 </p>
             @endforelse

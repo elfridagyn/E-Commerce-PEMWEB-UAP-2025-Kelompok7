@@ -56,7 +56,7 @@ Route::get('/', function () {
 // -------------------------------------------------
 // AUTH
 // -------------------------------------------------
-require _DIR_ . '/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -102,40 +102,59 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/stores/{store}/reject', [AdminStoreVerificationController::class, 'reject'])
                 ->name('store.reject');
+            
+            Route::resource('shipping-types', App\Http\Controllers\ShippingTypeController::class);
+
         });
 
+        // -------------------------------------------------
+// MEMBER PANEL
+// -------------------------------------------------
+Route::middleware(['auth', 'role:member'])
+    ->prefix('member')
+    ->name('member.')
+    ->group(function () {
 
-    //
-    // -------------------------------------------------
-    // MEMBER PANEL (versi dari HEAD)
-    // -------------------------------------------------
-    //
-    Route::middleware(['role:member'])
-        ->prefix('member')
-        ->name('member.')
-        ->group(function () {
+        /**
+         * Dashboard member
+         * Kamu ingin dashboard = halaman home → tinggal arahkan ke HomeController
+         * Tapi route name BIARKAN "dashboard" agar tidak error di Blade
+         */
+        Route::get('/dashboard', [HomeController::class, 'index'])
+            ->name('dashboard');
 
-            Route::get('/home', [HomeController::class, 'index'])
-                ->name('home');
+        /**
+         * OPTIONAL: Jika mau tetap punya jalur /member/home juga
+         */
+        Route::get('/home', [HomeController::class, 'index'])
+            ->name('home');
 
-            // Detail produk
-            Route::get('/product/{slug}', [MemberProductController::class, 'show'])
-                ->name('product.show');
+        // Detail produk
+        Route::get('/product/{slug}', [MemberProductController::class, 'show'])
+            ->name('product.show');
 
-            // Checkout
-            Route::get('/checkout/{product}', [CheckoutController::class, 'start'])
-                ->name('checkout.start');
+        // Checkout (tampil form checkout)
+        Route::get('/checkout/{product}', [CheckoutController::class, 'start'])
+            ->name('checkout.start');
 
-            // Riwayat
-            Route::get('/history', function () {
-                return view('member.history');
-            })->name('history');
+        // Checkout store (simpan transaksi)
+        Route::post('/checkout/{product}', [TransactionController::class, 'store'])
+            ->name('checkout.store');
 
-            // Topup saldo
-            Route::get('/topup', function () {
-                return view('member.topup');
-            })->name('topup');
-        });
+        // Riwayat transaksi
+        Route::get('/transactions', [TransactionController::class, 'index'])
+            ->name('transactions.index');
+
+        // Topup saldo
+        Route::get('/topup', function () {
+            return view('member.topup');
+        })->name('topup');
+
+        // Riwayat aktivitas/member
+        Route::get('/history', function () {
+            return view('member.history');
+        })->name('history');
+    });
 
 
     //
@@ -158,28 +177,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/store/register', [SellerStoreController::class, 'store'])
                 ->name('store.save');
         });
-
-
-    //
-    // -------------------------------------------------
-    // MEMBER PANEL (versi dari main)
-    // -------------------------------------------------
-    //
-    Route::middleware(['role:member'])
-        ->prefix('member')
-        ->name('member.')
-        ->group(function () {
-
-            Route::get('/dashboard', [MemberDashboardController::class, 'index'])
-                ->name('dashboard');
-
-            Route::get('/transactions', [TransactionController::class, 'index'])
-                ->name('transactions.index');
-
-            Route::post('/checkout/{product}', [TransactionController::class, 'store'])
-                ->name('checkout.store');
-        });
-
 
     //
     // -------------------------------------------------

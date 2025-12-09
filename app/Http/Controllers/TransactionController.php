@@ -21,45 +21,57 @@ class TransactionController extends Controller
     }
 
     public function store(Request $request, Product $product)
-    {
-        $request->validate([
-            'qty' => 'required|integer|min:1',
-            'address' => 'required',
-            'city' => 'required',
-            'postal_code' => 'required',
-        ]);
+{
+    $request->validate([
+        'qty' => 'required|integer|min:1',
+        'address' => 'required',
+        'city' => 'required',
+        'postal_code' => 'required',
+    ]);
 
-        $qty = $request->qty;
-        $subtotal = $product->price * $qty;
-        $shipping = 10000;        // dummy
-        $tax = 0;
-        $grandTotal = $subtotal + $shipping + $tax;
+    $qty = $request->qty;
 
-        $trx = Transaction::create([
-            'code' => 'TRX-' . strtoupper(Str::random(6)),
-            'buyer_id' => auth()->id(),
-            'store_id' => $product->store_id,
-            'address' => $request->address,
-            'city' => $request->city,
-            'postal_code' => $request->postal_code,
-            'shipping_type' => 'jne',
-            'shipping_cost' => $shipping,
-            'tax' => $tax,
-            'grand_total' => $grandTotal,
-            'payment_status' => 'unpaid',
-        ]);
+    $subtotal = $product->price * $qty;
+    $shipping_cost = 10000; // dummy
+    $tax = 0;
+    $grand_total = $subtotal + $shipping_cost + $tax;
 
-        TransactionDetail::create([
-            'transaction_id' => $trx->id,
-            'product_id' => $product->id,
-            'qty' => $qty,
-            'subtotal' => $subtotal,
-        ]);
+    $transaction = \App\Models\Transaction::create([
+        'code' => 'TRX-' . strtoupper(Str::random(8)),
 
-        // kalau mau, kurangi stok
-        $product->decrement('stock', $qty);
+        // sesuai database kamu
+        'user_id' => auth()->id(),
+        'buyer_id' => auth()->id(),
+        'store_id' => $product->store_id,
+        'product_id' => $product->id,
 
-        // tombol “Bayar” nanti cukup ubah payment_status jadi 'paid'
-        return redirect()->route('transactions.index')->with('success', 'Transaksi dibuat, silakan lakukan pembayaran.');
-    }
+        'address' => $request->address,
+        'city' => $request->city,
+        'postal_code' => $request->postal_code,
+
+        // sesuai tabel kamu
+        'shipping_type' => 'jne',
+        'shipping_cost' => $shipping_cost,
+
+        'tax' => $tax,
+        'grand_total' => $grand_total,
+
+        // SESUAI DATABASE MU
+        'payment_status' => 'unpaid',
+    ]);
+
+    // create detail transaksi
+    TransactionDetail::create([
+        'transaction_id' => $transaction->id,
+        'product_id' => $product->id,
+        'qty' => $qty,
+        'subtotal' => $subtotal,
+    ]);
+
+    // kurangi stok
+    $product->decrement('stock', $qty);
+
+    return redirect()->route('member.transactions.index')
+        ->with('success', 'Transaksi berhasil dibuat.');
+}
 }

@@ -3,23 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductReview extends Model
 {
+    use HasFactory;
+
+    protected $table = 'product_reviews';
+
     protected $fillable = [
-        'transaction_id',
         'product_id',
+        'user_id',
         'rating',
-        'review',
+        'comment',
     ];
 
-    public function transaction()
-    {
-        return $this->belongsTo(Transaction::class);
-    }
-
+    // Relasi ke Product
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    // Relasi ke User
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
     }
 }
