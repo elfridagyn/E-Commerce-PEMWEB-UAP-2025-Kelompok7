@@ -19,6 +19,7 @@ class StoreSeeder extends Seeder
             'city' => 'Malang',
             'address' => 'Jl. Contoh No. 1',
             'postal_code' => '65100',
+            'about' => 'Toko ini menjual berbagai produk berkualitas.',
             'is_verified' => 1,
         ]);
     }
