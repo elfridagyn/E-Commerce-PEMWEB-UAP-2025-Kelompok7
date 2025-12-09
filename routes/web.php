@@ -56,7 +56,7 @@ Route::get('/', function () {
 // -------------------------------------------------
 // AUTH
 // -------------------------------------------------
-require _DIR_ . '/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
