@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\SellerStoreController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\AdminController;
+
 
 
 // ---------------- PUBLIC ROUTES ----------------
@@ -94,7 +96,7 @@ Route::middleware(['auth'])->group(function () {
 
     // 1. ADMIN PANEL
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         // Tambahkan rute untuk CRUD user, produk, dll.
         Route::get('/panel', function () { return view('admin.panel'); })->name('panel');
     });
