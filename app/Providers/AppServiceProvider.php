@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Redirect::macro('home', function () {
+            $user = Auth::user();
+            
+            if (!$user) return '/login';
+            
+            if ($user->role === 'admin') {
+                return '/admin/dashboard';
+            }
+            
+            return '/user/dashboard';
+        });
     }
 }

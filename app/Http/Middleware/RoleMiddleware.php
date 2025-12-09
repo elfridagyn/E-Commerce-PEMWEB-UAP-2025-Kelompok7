@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -7,14 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
         if (!Auth::check()) {
-            return redirect('/login');
+            return redirect()->route('login');
         }
 
-        if (Auth::user()->role !== $role) {
-            abort(403); // akses ditolak jika role tidak sesuai
+        if (! in_array(Auth::user()->role, $roles)) {
+            abort(403); // role tidak sesuai
         }
 
         return $next($request);

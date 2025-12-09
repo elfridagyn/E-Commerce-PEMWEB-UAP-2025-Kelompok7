@@ -30,24 +30,27 @@ class ProductController extends Controller
 
     // Seller: simpan produk
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required',
-            'product_category_id' => 'required|exists:product_categories,id',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'description' => 'nullable',
-        ]);
+{
+    $request->validate([
+        'name' => 'required',
+        'price' => 'required|numeric',
+        'thumbnail' => 'image|mimes:jpeg,png,jpg|max:2048'
+    ]);
 
-        $data['store_id'] = auth()->user()->store->id;
-        $data['slug'] = Str::slug($data['name']);
-        $data['condition'] = 'new';
-        $data['weight'] = 1;
+    $thumbnailPath = null;
 
-        Product::create($data);
-
-        return redirect()->route('home')->with('success', 'Produk berhasil ditambahkan');
+    if ($request->hasFile('thumbnail')) {
+        $thumbnailPath = $request->file('thumbnail')->store('products', 'public');
     }
+
+    Product::create([
+        'name' => $request->name,
+        'price' => $request->price,
+        'thumbnail' => $thumbnailPath,
+    ]);
+
+    return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan!');
+}
 
     // dst: edit, update, destroy
 }

@@ -30,10 +30,8 @@ class AuthenticatedSessionController extends Controller
         // Regenerate session untuk keamanan
         $request->session()->regenerate();
 
-        // Ambil user yang login
         $user = Auth::user();
 
-        // Redirect sesuai role
         return $this->authenticated($request, $user);
     }
 
@@ -41,18 +39,22 @@ class AuthenticatedSessionController extends Controller
      * Redirect setelah login sesuai role
      */
     protected function authenticated(Request $request, $user): RedirectResponse
-    {
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->role === 'user') {
-            return redirect()->route('user.dashboard');
-        } elseif ($user->role === 'seller') {
-            return redirect()->route('seller.dashboard');
-        }
-
-        // fallback
-        return redirect()->route('login');
+{
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.dashboard');
     }
+
+    if ($user->role === 'member') {
+        return redirect()->route('member.home');
+    }
+
+    if ($user->role === 'seller') {
+        return redirect()->route('seller.dashboard');
+    }
+
+    return redirect()->route('login');
+}
+
 
     /**
      * Logout user
@@ -64,6 +66,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login'); // arahkan ke halaman login setelah logout
+        return redirect()->route('login');
     }
 }

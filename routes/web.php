@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
@@ -12,7 +11,11 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\SellerStoreController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\MemberController;
+use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Http\Controllers\Member\HomeController;
+use App\Http\Controllers\Member\ProductController;
 
 
 // ---------------- PUBLIC ROUTES ----------------
@@ -68,14 +71,31 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ---------------- MEMBER ----------------
-    Route::middleware('role:member')->group(function () {
-        Route::get('/user/dashboard', function () {
-            return view('user.dashboard');
-        })->name('user.dashboard');
+Route::middleware(['auth', 'role:member'])
+    ->prefix('member')
+    ->name('member.')
+    ->group(function (){
 
-        Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
-        Route::post('checkout/{product}', [TransactionController::class, 'store'])->name('checkout.store');
+        Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+        // DETAIL PRODUK (route benar)
+        Route::get('/product/{slug}', [ProductController::class, 'show'])
+            ->name('product.show');
+
+        Route::get('/checkout/{product}', [\App\Http\Controllers\Member\CheckoutController::class, 'start'])
+            ->name('checkout.start');
+
+        Route::get('/history', function () {
+            return view('member.history');
+        })->name('history');
+
+        Route::get('/topup', function () {
+            return view('member.topup');
+        })->name('topup');
     });
+
+
+
 
     // ---------------- PROFILE ----------------
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
