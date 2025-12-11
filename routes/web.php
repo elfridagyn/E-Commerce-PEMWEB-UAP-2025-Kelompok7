@@ -11,9 +11,10 @@ use App\Http\Controllers\ProfileController;
 // ADMIN
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\ProductController as ProductController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminStoreVerificationController;
+use App\Http\Controllers\ShippingTypeController;
 
 // MEMBER
 use App\Http\Controllers\MemberDashboardController;
@@ -24,8 +25,9 @@ use App\Http\Controllers\TransactionController;
 
 // SELLER
 use App\Http\Controllers\Seller\SellerDashboardController;
-use App\Http\Controllers\Seller\StoreController;
+use App\Http\Controllers\Seller\StoreController as SellerStoreController;
 use App\Http\Controllers\Seller\SellerProfileController;
+use App\Http\Controllers\Seller\SellerCategoryController;
 
 // =================================================
 // HOME REDIRECT
@@ -45,7 +47,6 @@ Route::get('/', function () {
 // =================================================
 // AUTH
 // =================================================
-
 require __DIR__.'/auth.php';
 
 // =================================================
@@ -54,7 +55,7 @@ require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
 
-    // ================= ADMIN ================= ✅
+    // ================= ADMIN =================
     Route::middleware('role:admin')
         ->prefix('admin')
         ->name('admin.')
@@ -66,6 +67,7 @@ Route::middleware('auth')->group(function () {
             Route::resource('users', AdminUserController::class);
             Route::resource('kategori', CategoryController::class);
             Route::resource('produk', ProductController::class);
+            Route::resource('shipping-types', ShippingTypeController::class);
 
             Route::get('/stores', [AdminStoreVerificationController::class, 'index'])
                 ->name('store.index');
@@ -75,22 +77,15 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/stores/{store}/reject', [AdminStoreVerificationController::class, 'reject'])
                 ->name('store.reject');
-            Route::get('/seller/profile', [SellerProfileController::class, 'show'])
-    ->name('seller.profile');
-
-Route::get('/seller/profile', [SellerProfileController::class, 'edit'])
-    ->name('seller.profile');
-
-
         });
 
-    // ================= MEMBER ================= ✅
+    // ================= MEMBER =================
     Route::middleware('role:member')
         ->prefix('member')
         ->name('member.')
         ->group(function () {
 
-            Route::get('/dashboard', [MemberDashboardController::class, 'index'])
+            Route::get('/dashboard', [HomeController::class, 'index'])
                 ->name('dashboard');
 
             Route::get('/home', [HomeController::class, 'index'])
@@ -105,41 +100,53 @@ Route::get('/seller/profile', [SellerProfileController::class, 'edit'])
             Route::post('/checkout/{product}', [TransactionController::class, 'store'])
                 ->name('checkout.store');
 
+            Route::get('/transactions', [TransactionController::class, 'index'])
+                ->name('transactions.index');
+
+            Route::get('/topup', function () {
+                return view('member.topup');
+            })->name('topup');
+
+            Route::get('/history', function () {
+                return view('member.history');
+            })->name('history');
+
             // REGISTER TOKO
-            Route::get('/store/register', [StoreController::class, 'create'])
+            Route::get('/store/register', [SellerStoreController::class, 'index'])
                 ->name('store.register');
 
-            Route::post('/store/register', [StoreController::class, 'store'])
-                ->name('store.store');
+            Route::post('/store/register', [SellerStoreController::class, 'store'])
+                ->name('store.save');
         });
 
-    // ================= SELLER ================= ✅✅
-    Route::middleware(['auth', 'role:seller'])->group(function () {
-    // SELLER DASHBOARD
-Route::get('/seller/dashboard', [SellerDashboardController::class, 'index'])
-    ->name('seller.dashboard')
-    ->middleware(['auth', 'role:seller']);
+    // ================= SELLER =================
+    Route::middleware('role:seller')
+        ->prefix('seller')
+        ->name('seller.')
+        ->group(function () {
 
-    Route::get('/seller/profile', [SellerProfileController::class, 'show'])
-        ->name('seller.profile.show');
+            Route::get('/dashboard', [SellerDashboardController::class, 'index'])
+                ->name('dashboard');
 
-    Route::get('/seller/profile/edit', [SellerProfileController::class, 'edit'])
-        ->name('seller.profile.edit');
+            Route::get('/profile', [SellerProfileController::class, 'edit'])
+                ->name('profile.edit');
 
-    Route::post('/seller/profile/update', [SellerProfileController::class, 'update'])
-        ->name('seller.profile.update');
+            Route::put('/profile', [SellerProfileController::class, 'update'])
+                ->name('profile.update');
 
-    Route::delete('/seller/profile/delete', [SellerProfileController::class, 'destroy'])
-        ->name('seller.profile.delete');
-});
-    //CATEGORY
-    Route::middleware(['auth', 'role:seller'])->group(function () {
-    Route::prefix('/seller')->name('seller.')->group(function () {
-        Route::resource('categories', \App\Http\Controllers\Seller\SellerCategoryController::class);
-    });
-});
+            Route::delete('/profile', [SellerProfileController::class, 'destroy'])
+                ->name('profile.delete');
 
+            // REGISTER TOKO
+            Route::get('/store/register', [SellerStoreController::class, 'index'])
+                ->name('store.register');
 
+            Route::post('/store/register', [SellerStoreController::class, 'store'])
+                ->name('store.save');
+
+            // SELLER CATEGORY
+            Route::resource('categories', SellerCategoryController::class);
+        });
 
     // ================= USER PROFILE GLOBAL =================
     Route::get('/profile', [ProfileController::class, 'edit'])
