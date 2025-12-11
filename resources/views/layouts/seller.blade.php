@@ -18,7 +18,6 @@
         /* CONTENT FULL WIDTH */
         .content {
             width: 100%;
-            padding: 30px;
         }
     </style>
 </head>

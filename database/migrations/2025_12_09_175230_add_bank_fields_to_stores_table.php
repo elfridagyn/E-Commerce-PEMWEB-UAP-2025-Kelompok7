@@ -1,4 +1,5 @@
 <?php
+// File: database/migrations/2025_12_09_175230_add_bank_fields_to_stores_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,11 +13,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('stores', function (Blueprint $table) {
-    $table->string('bank_name')->nullable();
-    $table->string('bank_account_number')->nullable();
-    $table->string('bank_account_name')->nullable();
-});
-
+            // Cek apakah kolom sudah ada sebelum menambahkannya
+            if (!Schema::hasColumn('stores', 'bank_name')) {
+                $table->string('bank_name')->nullable();
+            }
+            // Lakukan pengecekan yang sama untuk kolom-kolom bank lainnya (jika ada)
+            // if (!Schema::hasColumn('stores', 'bank_account_number')) {
+            //     $table->string('bank_account_number')->nullable();
+            // }
+        });
     }
 
     /**
@@ -24,8 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('stores', function (Blueprint $table) {
-            //
-        });
+        // ... (Pastikan metode down() juga menghapus kolom jika ada)
     }
 };

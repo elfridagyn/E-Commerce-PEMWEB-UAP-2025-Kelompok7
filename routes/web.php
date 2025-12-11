@@ -114,23 +114,32 @@ Route::get('/seller/profile', [SellerProfileController::class, 'edit'])
         });
 
     // ================= SELLER ================= ✅✅
-    Route::middleware('role:seller')
-        ->prefix('seller')
-        ->name('seller.')
-        ->group(function () {
+    Route::middleware(['auth', 'role:seller'])->group(function () {
+    // SELLER DASHBOARD
+Route::get('/seller/dashboard', [SellerDashboardController::class, 'index'])
+    ->name('seller.dashboard')
+    ->middleware(['auth', 'role:seller']);
 
-            Route::get('/dashboard', [SellerDashboardController::class, 'index'])
-                ->name('dashboard');
+    Route::get('/seller/profile', [SellerProfileController::class, 'show'])
+        ->name('seller.profile.show');
 
-            Route::get('/profile', [SellerProfileController::class, 'edit'])
-                ->name('profile');
+    Route::get('/seller/profile/edit', [SellerProfileController::class, 'edit'])
+        ->name('seller.profile.edit');
 
-            Route::put('/profile', [SellerProfileController::class, 'update'])
-                ->name('profile.update');
+    Route::post('/seller/profile/update', [SellerProfileController::class, 'update'])
+        ->name('seller.profile.update');
 
-            Route::delete('/profile', [SellerProfileController::class, 'destroy'])
-                ->name('profile.delete');
-        });
+    Route::delete('/seller/profile/delete', [SellerProfileController::class, 'destroy'])
+        ->name('seller.profile.delete');
+});
+    //CATEGORY
+    Route::middleware(['auth', 'role:seller'])->group(function () {
+    Route::prefix('/seller')->name('seller.')->group(function () {
+        Route::resource('categories', \App\Http\Controllers\Seller\SellerCategoryController::class);
+    });
+});
+
+
 
     // ================= USER PROFILE GLOBAL =================
     Route::get('/profile', [ProfileController::class, 'edit'])

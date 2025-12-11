@@ -143,26 +143,26 @@
 </head>
 
 <body>
-
 <div class="top-navbar">
-    <div></div> <!-- spacer kosong kiri -->
+    <div></div> <!-- spacer kiri -->
 
-    <div onclick="toggleDropdown()" class="user-info">
-        <img src="https://ui-avatars.com/api/?name=SELLER" class="avatar">
-        <span>Seller</span>
-        <i class="fas fa-caret-down"></i>
-    </div>
+    <div class="user-info" id="userInfoBtn" onclick="toggleDropdown()">
+        <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}" class="avatar" alt="avatar">
+        <span>{{ auth()->user()->name }}</span>
+        <i class="fas fa-caret-down" style="margin-left:6px;"></i>
 
-    <div id="dropdownMenu" class="dropdown-menu">
-        <a href="{{ route('seller.profile') }}">Profil</a>
-        <form action="{{ route('logout') }}" method="POST">@csrf
-            <button type="submit">Logout</button>
-        </form>
+        <div id="dropdownMenu" class="dropdown-menu" aria-hidden="true">
+            <a href="{{ route('seller.profile.show') }}">Profil</a>
+
+            <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                @csrf
+                <button type="submit">Logout</button>
+            </form>
+        </div>
     </div>
 </div>
 
 <div class="container">
-
     <div class="welcome-box">
         <i class="fas fa-store"></i>
         <h1>Dashboard Seller</h1>
@@ -170,10 +170,9 @@
     </div>
 
     <div class="menu-grid">
-
         <div class="menu-card">
             <i class="fas fa-id-card"></i>
-            <a href="{{ route('seller.profile') }}">Profil Toko</a>
+            <a href="{{ route('seller.profile.show') }}">Profil Toko</a>
         </div>
 
         <div class="menu-card">
@@ -200,25 +199,24 @@
             <i class="fas fa-money-bill-transfer"></i>
             <a href="#">Penarikan Dana</a>
         </div>
-
     </div>
-
 </div>
 
 <script>
 function toggleDropdown() {
     const menu = document.getElementById("dropdownMenu");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    const isShown = menu.style.display === "flex";
+    menu.style.display = isShown ? "none" : "flex";
+    menu.setAttribute('aria-hidden', isShown ? 'true' : 'false');
 }
 
+// tutup dropdown jika klik di luar
 document.addEventListener("click", function(e) {
     const menu = document.getElementById("dropdownMenu");
-    const userInfo = document.querySelector(".user-info");
-
-    if (menu.style.display === "block" &&
-        !userInfo.contains(e.target) &&
-        !menu.contains(e.target)) {
+    const btn = document.getElementById("userInfoBtn");
+    if (!btn.contains(e.target) && menu.style.display === "flex") {
         menu.style.display = "none";
+        menu.setAttribute('aria-hidden', 'true');
     }
 });
 </script>

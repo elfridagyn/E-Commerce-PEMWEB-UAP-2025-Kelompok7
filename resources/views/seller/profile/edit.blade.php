@@ -5,14 +5,22 @@
 @section('content')
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
 <style>
+/* GLOBAL */
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    scrollbar-gutter: stable; /* agar centering tidak terganggu scrollbar */
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #f3b8c8, #e38fa2, #d86e82);
-    margin: 0;
-    padding: 40px 0;
+    min-height: 100vh;
 }
 
 /* NAVBAR */
@@ -21,7 +29,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
-    padding: 0 40px;
+    padding: 20px 40px; /* SAMA dengan container padding */
 }
 
 .back-to-dashboard {
@@ -29,7 +37,7 @@ body {
     align-items: center;
     gap: 8px;
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255,255,255,0.35);
     backdrop-filter: blur(10px);
     padding: 10px 18px;
     border-radius: 30px;
@@ -38,16 +46,11 @@ body {
     box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
 }
 
-.nav-right {
-    display: flex;
-    align-items: center;
-}
-
 .user-info {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255,255,255,0.35);
     padding: 10px 18px;
     border-radius: 30px;
     box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
@@ -59,14 +62,15 @@ body {
     border-radius: 50%;
 }
 
-/* MAIN CONTENT */
+/* CONTAINER — perbaikan utama */
 .container {
-    max-width: 1000px;
-    margin: auto;
+    width: min(1100px, calc(100% - 80px)); /* simetris kiri-kanan */
     padding: 0 40px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
-/* TITLE */
+/* TITLE BOX */
 .title-box {
     background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(12px);
@@ -122,9 +126,9 @@ body {
     font-weight: 600;
 }
 
-.status-pending { background:#f1c40f; color:#6b4d00; }
-.status-approved { background:#2ecc71; color:#145a32; }
-.status-rejected { background:#e74c3c; color:white; }
+.status-pending { background: #f1c40f; color: #6b4d00; }
+.status-approved { background: #2ecc71; color: #145a32; }
+.status-rejected { background: #e74c3c; color: white; }
 
 /* FORM */
 label {
@@ -134,12 +138,14 @@ label {
     color: #6b2b38;
 }
 
-input, textarea {
+input,
+textarea {
     width: 100%;
     padding: 12px;
     margin-top: 6px;
     border-radius: 10px;
     border: none;
+    box-sizing: border-box;
 }
 
 textarea { resize: vertical; }
@@ -152,6 +158,8 @@ textarea { resize: vertical; }
     border-radius: 30px;
     border: none;
     font-weight: 600;
+    cursor: pointer;
+    
 }
 
 .btn-danger {
@@ -162,6 +170,7 @@ textarea { resize: vertical; }
     border-radius: 30px;
     border: none;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .alert-success {
@@ -171,12 +180,20 @@ textarea { resize: vertical; }
     border-radius: 10px;
     margin-bottom: 20px;
 }
+
+.error-text {
+    color: #6b2b38;
+    font-size: 0.85rem;
+    margin-top: 3px;
+}
+
 </style>
 
 {{-- NAVBAR --}}
 <div class="top-navbar">
-    <a href="{{ route('seller.dashboard') }}" class="back-to-dashboard">
-        <i class="fas fa-arrow-left"></i> Dashboard
+
+    <a href="{{ route('seller.profile.show') }}" class="back-to-dashboard">
+        <i class="fas fa-arrow-left"></i> Show Profile
     </a>
 
     <div class="nav-right">
@@ -191,73 +208,69 @@ textarea { resize: vertical; }
 
     <div class="title-box">
         <i class="fas fa-store"></i>
-        <h2>Profil Toko</h2>
+        <h2>Profile Toko</h2>
         <p>Kelola identitas dan informasi tokomu</p>
     </div>
 
     <div class="card-box">
 
         <div class="logo-box">
-            <img src="{{ $store->logo ? asset('storage/'.$store->logo) : 'https://via.placeholder.com/120?text=LOGO' }}">
+            <img src="{{ $store->logo ? asset('storage/' . $store->logo) : 'https://via.placeholder.com/120?text=LOGO' }}">
             <div class="status-badge status-{{ $store->status }}">
                 {{ ucfirst($store->status) }}
             </div>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert-success">{{ session('success') }}</div>
         @endif
 
         <form method="POST" action="{{ route('seller.profile.update') }}" enctype="multipart/form-data">
             @csrf
-            @method('PUT')
 
             <label>Nama Toko</label>
-            <input type="text" name="name" value="{{ $store->name }}">
+            <input type="text" name="name" value="{{ old('name', $store->name) }}">
+            @error('name') <div class="error-text">{{ $message }}</div> @enderror
 
             <label>Logo</label>
             <input type="file" name="logo">
+            @error('logo') <div class="error-text">{{ $message }}</div> @enderror
 
             <label>Deskripsi</label>
-            <textarea name="about">{{ $store->about }}</textarea>
+            <textarea name="about">{{ old('about', $store->about) }}</textarea>
 
             <label>No Telepon</label>
-            <input type="text" name="phone" value="{{ $store->phone }}">
+            <input type="text" name="phone" value="{{ old('phone', $store->phone) }}">
 
             <label>Kota</label>
-            <input type="text" name="city" value="{{ $store->city }}">
+            <input type="text" name="city" value="{{ old('city', $store->city) }}">
 
             <label>Alamat</label>
-            <textarea name="address">{{ $store->address }}</textarea>
+            <textarea name="address">{{ old('address', $store->address) }}</textarea>
 
             <label>Kode Pos</label>
-            <input type="text" name="postal_code" value="{{ $store->postal_code }}">
-<hr style="margin:40px 0; border:1px solid rgba(107,43,56,0.25);">
+            <input type="text" name="postal_code" value="{{ old('postal_code', $store->postal_code) }}">
 
-<h3 style="color:#6b2b38; margin-bottom:10px;">
-    <i class="fas fa-university"></i> Informasi Rekening Bank
-</h3>
+            <hr style="margin:40px 0; border:1px solid rgba(107,43,56,0.25);">
 
-<label>Nama Bank</label>
-<input type="text" name="bank_name"
-       value="{{ old('bank_name', $store->bank_name) }}"
-       placeholder="Contoh: BCA">
+            <h3 style="color:#6b2b38; margin-bottom:10px;">
+                <i class="fas fa-university"></i> Informasi Rekening Bank
+            </h3>
 
-<label>Nomor Rekening</label>
-<input type="text" name="bank_account_number"
-       value="{{ old('bank_account_number', $store->bank_account_number) }}"
-       placeholder="1234567890">
+            <label>Nama Bank</label>
+            <input type="text" name="bank_name" value="{{ old('bank_name', $store->bank_name) }}">
 
-<label>Nama Pemilik Rekening</label>
-<input type="text" name="bank_account_name"
-       value="{{ old('bank_account_name', $store->bank_account_name) }}"
-       placeholder="Nama sesuai buku rekening">
+            <label>Nomor Rekening</label>
+            <input type="text" name="bank_account_number" value="{{ old('bank_account_number', $store->bank_account_number) }}">
+
+            <label>Nama Pemilik Rekening</label>
+            <input type="text" name="bank_account_name" value="{{ old('bank_account_name', $store->bank_account_name) }}">
 
             <button class="btn-primary">Simpan Perubahan</button>
         </form>
 
         <form method="POST" action="{{ route('seller.profile.delete') }}"
-              onsubmit="return confirm('Yakin hapus toko?')">
+            onsubmit="return confirm('Yakin ingin menghapus toko?')">
             @csrf
             @method('DELETE')
             <button class="btn-danger">Hapus Toko</button>
