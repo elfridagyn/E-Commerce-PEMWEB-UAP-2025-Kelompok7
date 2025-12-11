@@ -24,6 +24,8 @@
             align-items: center; 
             margin-bottom: 30px;
             padding: 0 40px;
+            position:relative ;
+            z-index: 100;
         }
 
         .back-btn {
@@ -68,6 +70,7 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
+            z-index: 1000; 
         }
 
         .dropdown-menu a, .dropdown-menu button {
@@ -225,4 +228,3 @@ document.addEventListener("click", function(e) {
 </body>
 </html>
 
-<h1>Seller Dashboard</h1>
