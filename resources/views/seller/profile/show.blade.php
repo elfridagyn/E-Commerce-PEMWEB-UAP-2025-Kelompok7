@@ -1,137 +1,262 @@
-@extends('seller.profile')
-
-@section('title', 'Profil Toko')
+@extends('layouts.seller')
 
 @section('content')
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
 <style>
-.container {
-    max-width: 900px;
-    margin: auto;
-}
+    html,
+    body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        scrollbar-gutter: stable;
+        /* agar centering tidak terganggu scrollbar */
+    }
 
-.profile-card {
-    background: rgba(255,255,255,0.45);
-    backdrop-filter: blur(12px);
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0px 10px 25px rgba(0,0,0,0.15);
-}
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5b8c8, #e58fa2, #d56e82);
+        margin: 0;
+    }
 
-.profile-header {
-    text-align: center;
-    margin-bottom: 25px;
-}
+    .top-navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px 40px;
+    }
 
-.profile-header img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 4px solid #c96a7f;
-    object-fit: cover;
-}
+    .back-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(10px);
+        padding: 10px 18px;
+        border-radius: 30px;
+        color: #6b2b38;
+        font-weight: 600;
+        transition: 0.3s;
+    }
 
-.status {
-    margin-top: 10px;
-    display: inline-block;
-    padding: 8px 20px;
-    border-radius: 30px;
-    font-weight: 600;
-}
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 0.5);
+        transform: scale(1.04);
+    }
 
-.pending { background: #f1c40f; color: #6b4d00; }
-.approved { background: #2ecc71; color: #145a32; }
-.rejected { background: #e74c3c; color: white; }
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.35);
+        padding: 10px 18px;
+        border-radius: 30px;
+        backdrop-filter: blur(10px);
+        position: relative;
+    }
 
-.section {
-    margin-top: 30px;
-}
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+    }
 
-.section h3 {
-    color: #6b2b38;
-    margin-bottom: 15px;
-}
+    .container {
+        width: min(1100px, calc(100% - 80px));
+        /* simetris kiri-kanan */
+        padding: 0 40px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
 
-.info {
-    margin-bottom: 10px;
-}
+    .title-header {
+        font-size: 32px;
+        font-weight: 700;
+        color: #5b2230;
+        margin-bottom: 25px;
+        text-align: center;
+    }
 
-.label {
-    font-weight: 600;
-    color: #6b2b38;
-}
+    .profile-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
 
-.actions {
-    margin-top: 30px;
-    display: flex;
-    gap: 15px;
-}
+    .card {
+        background: rgba(255, 255, 255, 0.35);
+        padding: 30px;
+        border-radius: 22px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
 
-.btn {
-    padding: 12px 25px;
-    border-radius: 25px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-}
+    .profile-photo {
+        width: 150px;
+        height: 150px;
+        border-radius: 18px;
+        object-fit: cover;
+        margin-bottom: 20px;
+        background: #eee;
+    }
 
-.btn-primary { background:#6b2b38; color:white; }
-.btn-danger { background:#8b1e2e; color:white; }
+    .label {
+        font-weight: 600;
+        color: #5b2a36;
+        font-size: 14px;
+        margin-top: 15px;
+    }
+
+    h3 {
+        margin: 4px 0 14px 0;
+        color: #5b2a36;
+    }
+
+    p {
+        margin: 4px 0 14px 0;
+        font-size: 14px;
+        color: #3c1f26;
+    }
+
+    .btn-custom {
+        width: 100%;
+        background: linear-gradient(145deg, #d8849aff, #d4687fff);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 14px;
+        font-weight: 600;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        width: 100%;
+        background: #d90429;
+        color: #fff;
+        border: none;
+        padding: 12px;
+        border-radius: 14px;
+        margin-top: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-danger:hover {
+        background: #b40220;
+        transform: translateY(-2px);
+    }
+
+    .alert-success {
+        background: rgba(76, 209, 55, 0.25);
+        border-left: 6px solid #34c759;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        color: #2b8a3e;
+    }
+
+    @media (max-width: 900px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
+
+{{-- NAVBAR --}}
+<div class="top-navbar">
+    <a href="{{ route('seller.dashboard') }}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+
+    <div class="nav-right">
+        <div class="user-info">
+            <img src="https://ui-avatars.com/api/?name={{ auth()->user()->name }}" class="avatar">
+            <span>{{ auth()->user()->name }}</span>
+        </div>
+    </div>
+</div>
 
 <div class="container">
 
-    <div class="profile-card">
+    <h1 class="title-header">Profil Toko</h1>
 
-        <div class="profile-header">
-            <img src="{{ $store->logo 
-                ? asset('storage/'.$store->logo) 
-                : 'https://via.placeholder.com/120?text=LOGO' }}">
+    @if(session('success'))
+    <div class="alert-success">{{ session('success') }}</div>
+    @endif
 
-            <h2>{{ $store->name }}</h2>
+    <div class="profile-grid">
 
-            <span class="status {{ $store->status }}">
-                {{ ucfirst($store->status) }}
-            </span>
-        </div>
-
-        {{-- INFORMASI TOKO --}}
-        <div class="section">
+        {{-- CARD PROFIL --}}
+        <div class="card">
+            <img src="{{ $store->logo ? asset('storage/'.$store->logo) : 'https://via.placeholder.com/150' }}" class="profile-photo">
             <h3>Informasi Toko</h3>
-            <div class="info"><span class="label">Deskripsi:</span> {{ $store->about }}</div>
-            <div class="info"><span class="label">No. Telepon:</span> {{ $store->phone }}</div>
-            <div class="info"><span class="label">Kota:</span> {{ $store->city }}</div>
-            <div class="info"><span class="label">Alamat:</span> {{ $store->address }}</div>
-            <div class="info"><span class="label">Kode Pos:</span> {{ $store->postal_code }}</div>
+
+            <p class="label">Nama Toko</p>
+            <p>{{ $store->name }}</p>
+
+            <p class="label">Deskripsi</p>
+            <p>{{ $store->about }}</p>
+
+            <p class="label">Telepon</p>
+            <p>{{ $store->phone }}</p>
+
+            <p class="label">Alamat</p>
+            <p>{{ $store->address }}, {{ $store->city }} ({{ $store->postal_code }})</p>
         </div>
 
-        {{-- INFORMASI BANK --}}
-        <div class="section">
-            <h3>Informasi Rekening</h3>
-            <div class="info"><span class="label">Bank:</span> {{ $store->bank_name ?? '-' }}</div>
-            <div class="info"><span class="label">No Rekening:</span> {{ $store->bank_account_number ?? '-' }}</div>
-            <div class="info"><span class="label">Atas Nama:</span> {{ $store->bank_account_name ?? '-' }}</div>
-        </div>
+        {{-- CARD REKENING --}}
+        <div class="card">
+            <h3>Informasi Bank</h3>
 
-        {{-- ACTION --}}
-        <div class="actions">
-            <a href="{{ route('seller.profile.edit') }}" class="btn btn-primary">
-                Edit Profil
+            <p class="label">Bank</p>
+            <p>{{ $store->bank_name }}</p>
+
+            <p class="label">Nomor Rekening</p>
+            <p>{{ $store->bank_account_number }}</p>
+
+            <p class="label">Nama Pemilik</p>
+            <p>{{ $store->bank_account_name }}</p>
+
+            <a href="{{ route('seller.profile.edit') }}">
+                <button class="btn-custom">Edit Profil</button>
             </a>
 
-            <form action="{{ route('seller.profile.delete') }}" method="POST"
-                  onsubmit="return confirm('Yakin hapus toko?')">
+            <form action="{{ route('seller.profile.delete') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus toko?')">
                 @csrf
                 @method('DELETE')
-                <button class="btn btn-danger">Hapus Toko</button>
+                <button class="btn-danger">Hapus Toko</button>
             </form>
         </div>
 
     </div>
-
 </div>
+
+<script>
+    function toggleDropdown() {
+        const menu = document.getElementById("dropdownMenu");
+        menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+    }
+
+    document.addEventListener("click", function(e) {
+        const menu = document.getElementById("dropdownMenu");
+        const btn = document.getElementById("userInfoBtn");
+        if (!btn.contains(e.target)) {
+            menu.style.display = "none";
+        }
+    });
+</script>
 
 @endsection
