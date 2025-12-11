@@ -83,11 +83,14 @@
 
         <h1 class="text-3xl font-bold text-[#6b2b38] mb-4">Checkout</h1>
 
-        {{-- Tombol Kembali --}}
-        <a href="{{ url()->previous() }}" class="btn-back">← Kembali</a>
-
-        <form action="{{ route('member.checkout.store', $product->id) }}" method="POST" class="space-y-6">
+            {{-- Tombol Kembali --}}
+<a href="{{ url()->previous() }}" 
+   class="inline-block mb-4 px-4 py-2 bg-[#e5c3c8] hover:bg-[#d9aab2] text-[#6b2b38] font-semibold rounded-lg shadow">
+    ← Kembali
+</a>
+        <form action="{{ route('member.checkout.store', $product->id) }}" method="POST">
             @csrf
+            <input type="hidden" name="qty" value="1">
 
             {{-- Ringkasan Produk --}}
             <div class="glass-box">

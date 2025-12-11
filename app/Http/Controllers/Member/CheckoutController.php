@@ -13,8 +13,7 @@ class CheckoutController extends Controller
 
     return view('member.checkout', [
         'product' => $product,
-        'shippingTypes' => $shippingTypes,  // ← Kirim ke Blade
+        'shippingTypes' => $shippingTypes
     ]);
 }
-
 }

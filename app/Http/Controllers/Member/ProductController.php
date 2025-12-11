@@ -4,17 +4,20 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use Illuminate\Support\Facades\Schema;
+use App\Models\ProductCategory;
+use App\Models\ProductReview;
+use Illuminate\Http\Request;
+
 
 class ProductController extends Controller
 {
     public function show($slug)
-{
-    $product = Product::where('slug', $slug)->firstOrFail();
+    {
+        $product = Product::where('slug', $slug)->firstOrFail();
+        $categories = ProductCategory::all();
 
-    // Ambil review + user
-    $reviews = $product->productReviews()->with('user')->get();
+        $products = Product::latest()->take(8)->get(); // contoh ambil 8 produk terbaru
 
-    return view('member.product', compact('product', 'reviews'));
-}
+        return view('member.product-detail', compact('product', 'categories', 'products'));
+    }
 }

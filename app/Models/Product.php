@@ -6,18 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-
     protected $fillable = [
-        'store_id',
-        'product_category_id',
         'name',
-        'slug',
-        'description',
-        'condition',
         'price',
-        'weight',
-        'stock',
+        'description',
+        'thumbnail',
     ];
+
+    public function getThumbnailUrlAttribute()
+    {
+        return $this->thumbnail ? asset('storage/' . $this->thumbnail) : null;
+    }
 
     protected $casts = [
         'price' => 'decimal:2',

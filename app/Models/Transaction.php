@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
@@ -9,14 +10,18 @@ class Transaction extends Model
     protected $fillable = [
     'code',
     'user_id',
+    'buyer_id',
+    'store_id',
     'product_id',
-    'shipping_type_id',
     'address',
     'phone',
+    'shipping_type',
+    'shipping_cost',
+    'tax',
+    'grand_total',
     'payment_method',
-    'total_price',
-    'status',
-    ];
+    'payment_status',
+];
 
     protected $casts = [
         'shipping_cost' => 'decimal:2',
@@ -31,6 +36,11 @@ class Transaction extends Model
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+    // Relasi ke TransactionDetail
+    public function details()
+    {
+        return $this->hasMany(TransactionDetail::class, 'transaction_id', 'id');
     }
 
     public function transactionDetails()
