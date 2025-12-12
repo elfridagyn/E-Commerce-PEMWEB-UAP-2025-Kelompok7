@@ -1,0 +1,92 @@
+🛒 E-Commerce Laravel 12 – Setup & Panduan Penggunaan
+ELFRIDA GYON WIDAD & SALSAILA ZALYYATUL UMMAH
+Dokumentasi ini menjelaskan alur teknis, setup awal, dan cara menjalankan proyek setelah di-clone dari GitHub. Pastikan mengikuti langkah-langkah berikut agar aplikasi dapat berjalan dengan benar.
+
+1. Spesifikasi Proyek
+
+Framework: Laravel 12
+
+Database: MySQL
+
+Authentication Starter Kit: Laravel Breeze
+
+Proyek sudah dilengkapi dengan seluruh file migration dan seeder dasar untuk kebutuhan aplikasi e-commerce.
+
+2. Clone Repository
+
+Clone proyek dari GitHub menggunakan perintah berikut:
+
+git clone https://github.com/username/nama-repo.git
+cd nama-repo
+
+3. Install Dependensi
+
+Jalankan:
+
+composer install
+
+
+Perintah ini akan mengunduh seluruh package PHP yang diperlukan Laravel.
+
+4. Setup Environment
+
+Salin file .env.example menjadi .env:
+
+cp .env.example .env
+
+
+Atur konfigurasi database:
+
+DB_DATABASE=nama_database
+DB_USERNAME=root
+DB_PASSWORD=
+
+5. Generate Application Key
+
+Jalankan:
+
+php artisan key:generate
+
+
+Perintah ini membuat APP_KEY baru pada file .env.
+
+6. Migrasi Database
+
+Jalankan seluruh migration:
+
+php artisan migrate
+
+project menyediakan seeder tambahan, jalankan:
+
+php artisan db:seed --class=ShippingTypeSeeder
+php artisan db:seed --class=StoreBalanceSeeder
+
+
+7. Menjalankan Aplikasi
+
+Untuk menjalankan server:
+
+php artisan serve
+
+Akses aplikasi melalui:
+
+http://localhost:8000
+
+8. (Opsional) Instal Node Modules
+
+Jika proyek menggunakan Frontend (Vite, Tailwind, dsb.):
+
+npm install
+npm run dev
+
+9. Struktur Folder Penting
+
+app/ → berisi logic aplikasi (Models, Controllers)
+
+database/migrations/ → file struktur database
+
+database/seeders/ → data awal aplikasi
+
+routes/web.php → routing web
+
+resources/views/ → file Blade
