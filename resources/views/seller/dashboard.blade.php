@@ -25,7 +25,7 @@
             margin-bottom: 30px;
             padding: 0 40px;
             position:relative ;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .back-btn {
@@ -143,6 +143,12 @@
             font-weight: 600;
             color: #5b2a36;
         }
+
+        .menu-card a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 
@@ -179,29 +185,30 @@
             <a href="{{ route('seller.profile.show') }}">Profil Toko</a>
         </div>
 
+        
         <div class="menu-card">
-            <i class="fas fa-layer-group"></i>
-            <a href="#">Kelola Kategori Produk</a>
+            <i class="fas fa-id-card"></i>
+            <a href="{{ route('seller.categories.index') }}">Kelola Kategori Produk</a>
         </div>
 
         <div class="menu-card">
-            <i class="fas fa-box"></i>
-            <a href="#">Kelola Produk</a>
+            <i class="fas fa-id-card"></i>
+            <a href="{{ route('seller.products.index') }}">Kelola Produk</a>
         </div>
 
         <div class="menu-card">
             <i class="fas fa-shopping-cart"></i>
-            <a href="#">Pesanan Masuk</a>
+            <a href="{{ route('seller.orders.index') }}">Pesanan Masuk</a>
         </div>
 
         <div class="menu-card">
             <i class="fas fa-wallet"></i>
-            <a href="#">Saldo Toko</a>
+            <a href="{{ route('seller.balance.index') }}">Saldo Toko</a>
         </div>
 
         <div class="menu-card">
             <i class="fas fa-money-bill-transfer"></i>
-            <a href="#">Penarikan Dana</a>
+            <a href="{{ route('seller.withdrawals.index') }}">Penarikan Dana</a>
         </div>
     </div>
 </div>

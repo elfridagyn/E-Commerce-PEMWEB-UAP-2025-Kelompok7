@@ -1,9 +1,12 @@
+{{-- (Semua kode style dan awal form sudah benar, tidak diubah) --}}
+
 @extends('layouts.app')
 
 @section('title', 'Checkout')
 
 @push('styles')
 <style>
+    /* ... Style yang ada sudah benar ... */
     body {
         font-family: 'Poppins', sans-serif !important;
         background: linear-gradient(135deg, #f3b8c8, #e38fa2, #d86e82);
@@ -84,10 +87,32 @@
         <h1 class="text-3xl font-bold text-[#6b2b38] mb-4">Checkout</h1>
 
         {{-- Tombol Kembali --}}
-        <a href="{{ url()->previous() }}" class="btn-back">← Kembali</a>
-
-        <form action="{{ route('member.checkout.store', $product->id) }}" method="POST" class="space-y-6">
+        <a href="{{ url()->previous() }}" 
+            class="inline-block mb-4 px-4 py-2 bg-[#e5c3c8] hover:bg-[#d9aab2] text-[#6b2b38] font-semibold rounded-lg shadow">
+             ← Kembali
+        </a>
+        
+        {{-- Pesan Error/Gagal --}}
+        @if ($errors->any() || session('error'))
+            <div class="glass-box bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4" role="alert">
+                <strong class="font-bold">Gagal Membuat Pesanan!</strong>
+                @if(session('error'))
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                @else
+                    <span class="block sm:inline">Periksa kembali data yang Anda masukkan:</span>
+                    <ul class="mt-2 list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+        @endif
+        
+        <form action="{{ route('member.checkout.store', $product->id) }}" method="POST">
             @csrf
+            {{-- Quantity (sementara hardcode 1, disarankan menggunakan input field) --}}
+            <input type="hidden" name="qty" value="1"> 
 
             {{-- Ringkasan Produk --}}
             <div class="glass-box">
@@ -116,16 +141,18 @@
                 <h2 class="text-lg font-semibold text-[#6b2b38] mb-3">Alamat Pengiriman</h2>
 
                 <textarea name="address" rows="3" class="w-full"
-                          placeholder="Tulis alamat lengkap..." required>{{ old('address') }}</textarea>
+                          placeholder="Tulis alamat lengkap..." required>{{ old('address', auth()->user()->address ?? '') }}</textarea>
+                @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             {{-- Nomor HP --}}
-<div class="glass-box">
-    <h2 class="text-lg font-semibold text-[#6b2b38] mb-3">Nomor HP</h2>
-    <input type="text" name="phone" class="w-full" 
-           placeholder="Masukkan nomor HP aktif..." required
-           value="{{ old('phone') }}">
-</div>
+            <div class="glass-box">
+                <h2 class="text-lg font-semibold text-[#6b2b38] mb-3">Nomor HP</h2>
+                <input type="text" name="phone" class="w-full" 
+                        placeholder="Masukkan nomor HP aktif..." required
+                        value="{{ old('phone', auth()->user()->phone ?? '') }}">
+                @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
 
             {{-- Pengiriman --}}
             <div class="glass-box">
@@ -144,12 +171,14 @@
                             <p class="font-bold text-[#6b2b38]">
                                 Rp {{ number_format($type->cost, 0, ',', '.') }}
                             </p>
-                            <input type="radio" name="shipping_type_id" value="{{ $type->id }}" required>
+                            <input type="radio" name="shipping_type_id" value="{{ $type->id }}" 
+                                {{ old('shipping_type_id') == $type->id ? 'checked' : '' }} required>
                         </div>
                     </label>
                 @empty
                     <p class="text-sm text-[#6b2b38] opacity-70">Belum ada metode pengiriman.</p>
                 @endforelse
+                @error('shipping_type_id') <p class="text-red-500 text-xs mt-1">Pilih tipe pengiriman.</p> @enderror
             </div>
 
             {{-- Pembayaran --}}
@@ -162,7 +191,8 @@
                             <p class="font-semibold text-[#6b2b38]">Saldo</p>
                             <p class="text-xs text-[#6b2b38] opacity-70">Gunakan saldo dompet.</p>
                         </div>
-                        <input type="radio" name="payment_method" value="wallet" required>
+                        <input type="radio" name="payment_method" value="wallet" 
+                            {{ old('payment_method') == 'wallet' ? 'checked' : '' }} required>
                     </label>
 
                     <label class="radio-item flex justify-between cursor-pointer">
@@ -170,15 +200,17 @@
                             <p class="font-semibold text-[#6b2b38]">Virtual Account</p>
                             <p class="text-xs text-[#6b2b38] opacity-70">Transfer via VA bank.</p>
                         </div>
-                        <input type="radio" name="payment_method" value="va" required>
+                        <input type="radio" name="payment_method" value="va" 
+                            {{ old('payment_method') == 'va' ? 'checked' : '' }} required>
                     </label>
                 </div>
+                @error('payment_method') <p class="text-red-500 text-xs mt-1">Pilih metode pembayaran.</p> @enderror
             </div>
 
             {{-- Tombol Submit --}}
-<div class="text-right">
-    <button type="submit" class="btn-pink">Buat Pesanan</button>
-</div>
+            <div class="text-right">
+                <button type="submit" class="btn-pink">Buat Pesanan</button>
+            </div>
 
         </form>
 

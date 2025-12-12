@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_reviews', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        Schema::create('categories', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('store_id')->constrained('stores')->onDelete('cascade'); // kategori milik toko
+        $table->string('name');
+        $table->timestamps();
+    });
     }
 
     /**
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_reviews');
+        Schema::dropIfExists('categories');
     }
 };

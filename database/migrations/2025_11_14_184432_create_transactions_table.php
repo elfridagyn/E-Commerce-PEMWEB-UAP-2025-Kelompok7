@@ -6,34 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('code')->unique();
-            $table->foreignId('buyer_id')->constrained('users')->cascadeOnDelete();
+            
+            // Menggunakan buyer_id sebagai pengganti user_id
+            $table->foreignId('buyer_id')->constrained('users')->cascadeOnDelete(); 
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
+            
             $table->text('address');
-            $table->string('address_id');
-            $table->string('city');
-            $table->string('postal_code');
-            $table->string('shipping');
+            $table->string('phone', 15);
+            
+            // Foreign Key Wajib
+            $table->foreignId('shipping_type_id')->constrained('shipping_types')->cascadeOnDelete(); 
             $table->string('shipping_type');
-            $table->decimal('shipping_cost', 26, 2);
+            $table->decimal('shipping_cost', 10, 2);
             $table->string('tracking_number')->nullable();
-            $table->decimal('tax', 26, 2);
-            $table->decimal('grand_total', 26, 2);
+            
+            $table->decimal('subtotal', 10, 2);
+            $table->decimal('tax', 10, 2);
+            $table->decimal('grand_total', 10, 2);
+
+            $table->enum('payment_method', ['wallet', 'va']);
             $table->enum('payment_status', ['unpaid', 'paid'])->default('unpaid');
+            $table->enum('status', ['pending', 'processing', 'shipped', 'delivered', 'completed', 'canceled'])->default('pending');
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('transactions');

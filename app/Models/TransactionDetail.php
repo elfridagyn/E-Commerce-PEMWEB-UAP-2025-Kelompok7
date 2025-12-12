@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransactionDetail extends Model
 {
-
     protected $fillable = [
         'transaction_id',
         'product_id',
         'qty',
         'subtotal',
+        'store_id',
+        'seller_id', // Tambah: Kolom ini penting untuk riwayat penjual
     ];
 
     protected $casts = [
@@ -26,5 +27,15 @@ class TransactionDetail extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+    
+    public function store()
+    {
+        return $this->belongsTo(\App\Models\Store::class);
+    }
+    
+    public function seller()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'seller_id');
     }
 }

@@ -11,11 +11,13 @@ class StoreController extends Controller
 {
     public function create()
     {
+        
         return view('seller.store.register');
     }
 
     public function store(Request $request)
     {
+        
         $request->validate([
             'name' => 'required',
             'logo' => 'nullable|image',
@@ -37,4 +39,6 @@ class StoreController extends Controller
 
         return redirect('/seller/profile')->with('success', 'Toko berhasil didaftarkan! Menunggu persetujuan admin.');
     }
+
+    
 }

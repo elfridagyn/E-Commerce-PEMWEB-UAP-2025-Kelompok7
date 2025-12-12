@@ -5,130 +5,161 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str; // Import Str untuk membuat slug
 
 class SellerCategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar kategori untuk toko seller yang sedang login.
      */
     public function index()
     {
-        $store = Auth::user()->store;
-
-        $categories = ProductCategory::where('store_id', $store->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
+        // Ambil semua kategori yang store_id-nya sama dengan store ID milik user yang login
+        $categories = ProductCategory::where('store_id', Auth::user()->store->id)->get();
         return view('seller.categories.index', compact('categories'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form untuk membuat kategori baru.
      */
     public function create()
     {
-        $store = Auth::user()->store;
-
-        // hanya parent untuk dropdown
-        $parents = ProductCategory::where('store_id', $store->id)->get();
-
-        return view('seller.categories.create', compact('parents'));
+        
+        return view('seller.categories.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan kategori baru ke database.
      */
     public function store(Request $request)
     {
-        $store = Auth::user()->store;
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'tagline' => 'nullable|string|max:255',
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'tagline'     => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'parent_id' => 'nullable|exists:product_categories,id',
-            'image' => 'nullable|image|max:2048'
+            'image'       => 'nullable|string', 
+            'parent_id'   => 'nullable|exists:product_categories,id', 
         ]);
 
-        $data = $request->all();
-        $data['store_id'] = $store->id;
-        $data['slug'] = Str::slug($request->name);
-
-        // Upload image
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('category-images', 'public');
+        $store = Auth::user()->store;
+        
+        if (!$store) {
+             return back()->with('error', 'Anda belum memiliki toko yang terdaftar.');
         }
 
-        ProductCategory::create($data);
+        // --- Perbaikan Mulai di Sini ---
 
-        return redirect()->route('seller.categories.index')
-            ->with('success', 'Kategori berhasil ditambahkan.');
+        // 1. Tambahkan nilai default (null) untuk field yang bersifat nullable 
+        //    tetapi mungkin tidak dikirim dari form (misalnya: tagline, description, image, parent_id).
+        $data = array_merge([
+            'tagline'     => null,
+            'description' => null,
+            'image'       => null,
+            'parent_id'   => null,
+        ], $validated);
+
+
+        // 2. Buat slug unik
+        $slug = Str::slug($data['name']); // Gunakan data['name'] dari array yang sudah digabungkan
+        
+        $originalSlug = $slug;
+        $count = 1;
+        while (ProductCategory::where('store_id', $store->id)->where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+        
+        // 3. Simpan kategori
+        $category = ProductCategory::create([
+            'store_id'    => $store->id, 
+            'name'        => $data['name'],
+            'slug'        => $slug,
+            'tagline'     => $data['tagline'],     // Pasti ada, minimal null
+            'description' => $data['description'], // Pasti ada, minimal null
+            // 'image'       => $data['image'],
+        ]);
+
+        // --- Perbaikan Selesai ---
+
+        return redirect()->route('seller.categories.index')->with('success', 'Kategori **' . $category->name . '** berhasil dibuat!');
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan form untuk mengedit kategori.
+     * Menggunakan Route Model Binding untuk mengambil Category.
      */
     public function edit(ProductCategory $category)
     {
-        $store = Auth::user()->store;
+        // Pengecekan: Pastikan kategori ini milik toko user yang login
+        if ($category->store_id !== Auth::user()->store->id) {
+            abort(403, 'Akses ditolak. Kategori bukan milik toko Anda.');
+        }
 
-        // pastikan kategori milik toko yang login
-        abort_if($category->store_id != $store->id, 403);
-
-        $parents = ProductCategory::where('store_id', $store->id)
-            ->where('id', '!=', $category->id)
-            ->get();
-
-        return view('seller.categories.edit', compact('category', 'parents'));
+        $parentCategories = ProductCategory::where('store_id', Auth::user()->store->id)
+        ->where('id', '!=', $category->id) // agar kategori sendiri tidak jadi parent
+        ->get();
+    
+        return view('seller.categories.edit', compact('category', 'parentCategories'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Memperbarui kategori di database.
      */
     public function update(Request $request, ProductCategory $category)
     {
-        $store = Auth::user()->store;
-
-        abort_if($category->store_id != $store->id, 403);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'tagline' => 'nullable|string|max:255',
+        // Pengecekan: Pastikan kategori ini milik toko user yang login
+        if ($category->store_id !== Auth::user()->store->id) {
+            abort(403, 'Akses ditolak. Kategori bukan milik toko Anda.');
+        }
+        
+        // PENTING: Jika Anda mengimplementasikan file upload, validasi 'image' perlu disesuaikan
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'tagline'     => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'parent_id' => 'nullable|exists:product_categories,id',
-            'image' => 'nullable|image|max:2048'
+            'image'       => 'nullable|string',
+            'parent_id'   => 'nullable|exists:product_categories,id',
         ]);
-
-        $data = $request->all();
-        $data['slug'] = Str::slug($request->name);
-
-        // Upload baru jika ada
-        if ($request->hasFile('image')) {
-            // optionally delete old image
-
-            $data['image'] = $request->file('image')->store('category-images', 'public');
+        
+        $dataToUpdate = $validated;
+        
+        // 1. Tangani perubahan slug jika nama berubah
+        if ($category->name !== $validated['name']) {
+            $slug = Str::slug($validated['name']);
+            $originalSlug = $slug;
+            $count = 1;
+            while (ProductCategory::where('store_id', Auth::user()->store->id)
+                                 ->where('slug', $slug)
+                                 ->where('id', '!=', $category->id) // Abaikan kategori saat ini
+                                 ->exists()) {
+                $slug = $originalSlug . '-' . $count++;
+            }
+            $dataToUpdate['slug'] = $slug;
         }
 
-        $category->update($data);
+        $category->update($dataToUpdate);
 
-        return redirect()->route('seller.categories.index')
-            ->with('success', 'Kategori berhasil diperbarui.');
+        return redirect()->route('seller.categories.index')->with('success', 'Kategori **' . $category->name . '** berhasil diperbarui!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus kategori dari database.
      */
     public function destroy(ProductCategory $category)
     {
-        $store = Auth::user()->store;
-
-        abort_if($category->store_id != $store->id, 403);
-
+        // Pengecekan: Pastikan kategori ini milik toko user yang login
+        if ($category->store_id !== Auth::user()->store->id) {
+            abort(403, 'Akses ditolak. Kategori bukan milik toko Anda.');
+        }
+        
+        // PENTING: Tambahkan logika untuk menangani produk yang terasosiasi 
+        // (misalnya: ubah product->category_id menjadi null, atau hapus produk)
+        // Saat ini, diasumsikan relasi database menangani ini (misalnya: cascade on delete).
+        // Jika tidak, Anda bisa menambahkan:
+        // $category->products()->update(['product_category_id' => null]);
+        
         $category->delete();
 
-        return redirect()->route('seller.categories.index')
-            ->with('success', 'Kategori berhasil dihapus.');
+        return redirect()->route('seller.categories.index')->with('success', 'Kategori **' . $category->name . '** berhasil dihapus!');
     }
 }

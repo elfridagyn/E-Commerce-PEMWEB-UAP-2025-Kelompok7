@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\ShippingType; // <<< Import Class Model
 
 class ShippingTypeController extends Controller
 {
@@ -25,8 +26,9 @@ class ShippingTypeController extends Controller
             'cost' => 'required|numeric',
         ]);
 
+        // Pastikan Model ShippingType memiliki $fillable untuk 'name', 'estimate', dan 'cost'.
         ShippingType::create($request->all());
 
-        return redirect()->route('shipping-types.index');
+        return redirect()->route('admin.shipping-types.index')->with('success', 'Tipe pengiriman berhasil ditambahkan.');
     }
 }

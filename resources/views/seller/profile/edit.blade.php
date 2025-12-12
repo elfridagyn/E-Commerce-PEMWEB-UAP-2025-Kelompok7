@@ -159,7 +159,6 @@ textarea { resize: vertical; }
     border: none;
     font-weight: 600;
     cursor: pointer;
-    
 }
 
 .btn-danger {
@@ -227,7 +226,8 @@ textarea { resize: vertical; }
 
         <form method="POST" action="{{ route('seller.profile.update') }}" enctype="multipart/form-data">
             @csrf
-
+            @method('PUT')
+            
             <label>Nama Toko</label>
             <input type="text" name="name" value="{{ old('name', $store->name) }}">
             @error('name') <div class="error-text">{{ $message }}</div> @enderror

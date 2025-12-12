@@ -1,3 +1,4 @@
+
 public function start(Product $product)
 {
     $shippingTypes = \App\Models\ShippingType::all();
